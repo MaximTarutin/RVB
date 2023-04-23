@@ -15,6 +15,7 @@ class Plan_Window(QMainWindow):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)     # деактивируем кнопку закрыть окно
 
         self.PasswordWindow = passwrd.PasswordWindow()
+        self.PlanEditor= PlanEditor()
 
         self.query = QSqlQuery()
         self.__set_list_workers()
@@ -127,7 +128,7 @@ class Plan_Window(QMainWindow):
 #------------------------------- включаем редактор планировщика ----------------------------------------
 
     def __add_plan(self):
-        exit(99)
+        self.PlanEditor.show()
 
 
 if __name__ == "main":
