@@ -120,7 +120,7 @@ class Plan_Window(QMainWindow):
         self.ui.tableView.setColumnWidth(1, 120)
         self.ui.tableView.setColumnWidth(2,220)
         self.ui.tableView.setColumnWidth(3,220)
-        self.ui.tableView.setColumnWidth(4,580)
+        self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
 
         self.__checkbox_state()
         self.model.select()
