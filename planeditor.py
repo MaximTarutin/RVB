@@ -38,7 +38,7 @@ class PlanEditor(QMainWindow):
         self.ui.tableView.setColumnWidth(3, 200)
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
 
-        self.query.exec("SELECT Name FROM workers")
+        self.query.exec("SELECT Name FROM workers")         # Заполняем комбобокс сотрудники
         list_workers = []
         while self.query.next():
             name = self.query.value("Name")
@@ -46,7 +46,17 @@ class PlanEditor(QMainWindow):
         self.ui.comboBox.addItem("")
         for name in list_workers:
             self.ui.comboBox.addItem(name)
-        list_workers.clear()
+        del list_workers
+
+        self.query.exec("SELECT NAME FROM station")
+        list_station = []
+        while self.query.next():
+            name = self.query.value("NAME")
+            list_station.append(name)
+        self.ui.comboBox_2.addItem("")
+        for name in list_station:
+            self.ui.comboBox_2.addItem(name)
+        del list_station
 
 
         self.model.select()
