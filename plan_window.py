@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow)
 from PySide6.QtCore import (Qt, Signal)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
+from planeditor import PlanEditor
 
 class Plan_Window(QMainWindow):
     def __init__(self, parent = None):
@@ -28,6 +29,7 @@ class Plan_Window(QMainWindow):
         self.ui.pushButton_return.clicked.connect(self.return_to_mainwindow)    # вернуться в главное окно
         self.ui.action_return.triggered.connect(self.return_to_mainwindow)
         self.ui.checkBox.stateChanged.connect(self.__checkbox_state)            # состояние checkbox
+        self.ui.pushButton_add.clicked.connect(self.__add_plan)                 # Кнопка "Редактор"
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
@@ -121,6 +123,11 @@ class Plan_Window(QMainWindow):
 
         self.__checkbox_state()
         self.model.select()
+
+#------------------------------- включаем редактор планировщика ----------------------------------------
+
+    def __add_plan(self):
+        exit(99)
 
 
 if __name__ == "main":
