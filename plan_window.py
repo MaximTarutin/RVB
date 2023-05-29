@@ -1,7 +1,7 @@
 import sys
 import ui_planwindow
 from PySide6.QtWidgets import (QApplication, QMainWindow)
-from PySide6.QtCore import (Qt, Signal)
+from PySide6.QtCore import (Qt, Signal, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
 from planeditor import PlanEditor
@@ -124,6 +124,10 @@ class Plan_Window(QMainWindow):
 
         self.__checkbox_state()
         self.model.select()
+
+        self.ui.ultimate_dateEdit.setDate(QDate.currentDate())
+        self.ui.initial_dateEdit.setDate(QDate.currentDate())
+
 
 #------------------------------- включаем редактор планировщика ----------------------------------------
 

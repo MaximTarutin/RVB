@@ -1,5 +1,7 @@
 """ Редактор планировщика """
-# ДОДЕЛАТЬ ФУНКЦИЮ СОХРАНЕНИЯ В БАЗУ ДАННЫХ
+# ДОДЕЛАТЬ ФУНКЦИЮ СОХРАНЕНИЯ В БАЗУ ДАННЫХ:
+#  1) Сделать проверку есть ли хоть одна запись в таблице
+#  2) Если поля заполнены корректно, то внести запись в базу данных
 
 import sys
 from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox)
@@ -22,7 +24,7 @@ class PlanEditor(QMainWindow):
         self.init_plan_window()
 
         self.ui.pushButton_return.clicked.connect(self.__closeWindow)        # Закрываем это окно
-        self.ui.pushButton_add.clicked.connect(self.__data_to_base)          # Заносим данные в базу данных
+        self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
 
 #------------------------ Инициализация планировщика ---------------------------------------
 
@@ -40,6 +42,7 @@ class PlanEditor(QMainWindow):
         self.ui.tableView.setColumnWidth(2, 250)
         self.ui.tableView.setColumnWidth(3, 200)
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
+        self.model.select()
 
         self.query.exec("SELECT Name FROM workers")         # Заполняем комбобокс сотрудники
         list_workers = []
@@ -61,34 +64,51 @@ class PlanEditor(QMainWindow):
             self.ui.comboBox_2.addItem(name)
         del list_station
 
-
-        self.model.select()
-
 #------------------------ Закрываем окно редактора -----------------------------------------
 
     def __closeWindow(self):
+        self.ui.comboBox.setCurrentIndex(0)
+        self.ui.comboBox_2.setCurrentIndex(0)
+        self.ui.textEdit_plan.clear()
+        self.ui.dateEdit.setDate(QDate.currentDate())
         self.close()
 
 #------------------------ Вносим данные в базу данных -------------------------------------
 
-    def __data_to_base(self):
-        self.__check_to_data()
+    def __add_to_database(self):
+        if not self.__check_to_data():
+            return
+        self.__checking_for_availability()
 
 #------------------------ Проверка все ли поля заполнены перед внесением в базу ------------
+#-------------------------- если ошибок нет - возвращает истину, иначе - ложь --------------
 
     def __check_to_data(self):
         if self.ui.comboBox.currentIndex() == 0:
             self.__error_message("\n\n\tНе выбран сотрудник !!!\t\t\n\n")
-            return
+            return False
         if self.ui.comboBox_2.currentIndex() == 0:
             self.__error_message("\n\n\tНе выбрана станция или перегон !!!\t\t\n\n")
-            return
+            return False
         if len(self.ui.textEdit_plan.toPlainText()) < 1 or \
                self.ui.textEdit_plan.toPlainText().isspace():
             self.__error_message("\n\n\tНе заполнено поле работы !!!\t\t\n\n")
-            return
+            return False
+        else: return True
 
-#------------------------ Окно сообщения обошибке ------------------------------------------
+#------------------ Проверка не дублируется ли записи придобавлении ------------------------
+#----------- для этого проверяем на совпадение поля дата, станция и сотрудник --------------
+
+    def __checking_for_availability(self):
+        #self.query.exec('SELECT Data, Name, Station FROM plan_table')
+        DataThis = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
+        print(DataThis)
+        #while self.query.next():
+        #    DataTable = self.query.value('Data')
+        #    NameTable = self.query.value('Name')
+        #    StationTable = self.query.value('Station')
+
+#------------------------ Окно сообщения об ошибке ------------------------------------------
 
     def __error_message(self, message):
         self.msg = QMessageBox()
