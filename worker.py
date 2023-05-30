@@ -53,7 +53,7 @@ class WorkerWindow(QMainWindow):
                     len(post) == 0 or post.isspace() \
                     or len(number) == 0 or number.isspace():  # Если попадается пустое значение выходим из функции
                 return
-        self.query.exec_("INSERT INTO workers (Name, Post, Number) values('','','')")
+        self.query.exec("INSERT INTO workers (Name, Post, Number) values('','','')")
         self.query.next()
         self.model.select()
 

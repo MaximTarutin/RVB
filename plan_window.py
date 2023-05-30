@@ -1,6 +1,6 @@
 import sys
 import ui_planwindow
-from PySide6.QtWidgets import (QApplication, QMainWindow)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtCore import (Qt, Signal, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
@@ -27,10 +27,11 @@ class Plan_Window(QMainWindow):
 
         self.init()
 
-        self.ui.pushButton_return.clicked.connect(self.return_to_mainwindow)    # вернуться в главное окно
+        self.ui.pushButton_return.clicked.connect(self.return_to_mainwindow)         # вернуться в главное окно
         self.ui.action_return.triggered.connect(self.return_to_mainwindow)
-        self.ui.checkBox.stateChanged.connect(self.__checkbox_state)            # состояние checkbox
-        self.ui.pushButton_add.clicked.connect(self.__add_plan)                 # Кнопка "Редактор"
+        self.ui.checkBox.stateChanged.connect(self.__checkbox_state)                 # состояние checkbox
+        self.ui.pushButton_add.clicked.connect(self.__add_plan)                      # Кнопка "Редактор"
+        self.PlanEditor.ui.pushButton_return.clicked.connect(self.close_planeditor)  # события при закрытии редактора
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
@@ -78,6 +79,11 @@ class Plan_Window(QMainWindow):
     def return_to_mainwindow(self):
         self.close()
 
+#--------------------------обновляем таблицу при закрытии окна редактора ------------------------------------
+
+    def close_planeditor(self):
+        self.model.select()
+
 #------------------------------- Создаем список сотрудников ----------------------------------
 
     def __set_list_workers(self):
@@ -116,11 +122,14 @@ class Plan_Window(QMainWindow):
         self.model.setHeaderData(2, Qt.Horizontal, "Сотрудник")
         self.model.setHeaderData(3, Qt.Horizontal, "Станция")
         self.model.setHeaderData(4, Qt.Horizontal, "Работа")
+        self.ui.tableView.verticalHeader().hide()
         self.ui.tableView.setColumnWidth(0, 20)
         self.ui.tableView.setColumnWidth(1, 120)
         self.ui.tableView.setColumnWidth(2,220)
         self.ui.tableView.setColumnWidth(3,220)
+        self.ui.tableView.resizeRowsToContents()
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
+        self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
         self.__checkbox_state()
         self.model.select()
