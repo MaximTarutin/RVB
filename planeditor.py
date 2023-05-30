@@ -78,7 +78,9 @@ class PlanEditor(QMainWindow):
     def __add_to_database(self):
         if not self.__check_to_data():
             return
-        self.__checking_for_availability()
+        if not self.__checking_for_availability():
+            return
+        pass                    # Здесь код добавления записи в базу данных
 
 #------------------------ Проверка все ли поля заполнены перед внесением в базу ------------
 #-------------------------- если ошибок нет - возвращает истину, иначе - ложь --------------
@@ -96,17 +98,30 @@ class PlanEditor(QMainWindow):
             return False
         else: return True
 
-#------------------ Проверка не дублируется ли записи придобавлении ------------------------
+#---------------- Проверка не дублируется ли записи придобавлении в базу ------------------------
 #----------- для этого проверяем на совпадение поля дата, станция и сотрудник --------------
 
     def __checking_for_availability(self):
-        #self.query.exec('SELECT Data, Name, Station FROM plan_table')
+        count = 0
+        self.query.exec('SELECT Data, Name, Station FROM plan_table')
+
+        while self.query.next():                    # проверяем есть ли хоть одна запись в таблице,
+            count+=1                                # если нет, то выходим из функции и добавляем первую запись
+        if count==0: return True
+
         DataThis = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
-        print(DataThis)
-        #while self.query.next():
-        #    DataTable = self.query.value('Data')
-        #    NameTable = self.query.value('Name')
-        #    StationTable = self.query.value('Station')
+        NameThis = self.ui.comboBox.currentText()
+        StationThis = self.ui.comboBox_2.currentText()
+
+        while self.query.next():
+            DataTable = self.query.value('Data')
+            NameTable = self.query.value('Name')
+            StationTable = self.query.value('Station')
+            if DataThis==DataTable and NameThis==NameTable and StationThis==StationTable:
+                print('Работы на данного сотрудника в указанную дату на данной станциии уже запланированы')
+                return False                    # Запись не вносится
+        return True                             # Запись вносится
+
 
 #------------------------ Окно сообщения об ошибке ------------------------------------------
 
