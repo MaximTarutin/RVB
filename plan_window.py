@@ -5,6 +5,7 @@ from PySide6.QtCore import (Qt, Signal, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
 from planeditor import PlanEditor
+from delegate import TextBrowser_delegate
 
 class Plan_Window(QMainWindow):
     def __init__(self, parent = None):
@@ -32,6 +33,7 @@ class Plan_Window(QMainWindow):
         self.ui.checkBox.stateChanged.connect(self.__checkbox_state)                 # состояние checkbox
         self.ui.pushButton_add.clicked.connect(self.__add_plan)                      # Кнопка "Редактор"
         self.PlanEditor.ui.pushButton_return.clicked.connect(self.close_planeditor)  # события при закрытии редактора
+        self.ui.pushButton_delete.clicked.connect(self.__del_string)                 # удаляем выбранные строки
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
@@ -83,6 +85,7 @@ class Plan_Window(QMainWindow):
 
     def close_planeditor(self):
         self.model.select()
+        self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
 
 #------------------------------- Создаем список сотрудников ----------------------------------
 
@@ -117,25 +120,32 @@ class Plan_Window(QMainWindow):
 #----------------------------------- Инициализация -------------------------------------------
 
     def init(self):
-        self.model.setHeaderData(0, Qt.Horizontal, "№")
         self.model.setHeaderData(1, Qt.Horizontal, "Дата")
         self.model.setHeaderData(2, Qt.Horizontal, "Сотрудник")
         self.model.setHeaderData(3, Qt.Horizontal, "Станция")
         self.model.setHeaderData(4, Qt.Horizontal, "Работа")
-        self.ui.tableView.verticalHeader().hide()
-        self.ui.tableView.setColumnWidth(0, 20)
+
+        self.ui.tableView.hideColumn(0)
         self.ui.tableView.setColumnWidth(1, 120)
         self.ui.tableView.setColumnWidth(2,220)
         self.ui.tableView.setColumnWidth(3,220)
-        self.ui.tableView.resizeRowsToContents()
+        self.ui.tableView.setWordWrap(True)
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
         self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
         self.__checkbox_state()
         self.model.select()
-
+        self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
         self.ui.ultimate_dateEdit.setDate(QDate.currentDate())
         self.ui.initial_dateEdit.setDate(QDate.currentDate())
+
+# ---------------------------------- Удаление выбранных строк --------------------------------------
+
+    def __del_string(self):
+        if self.ui.tableView.selectionModel().hasSelection():
+            for index in self.ui.tableView.selectedIndexes() or []:
+                self.ui.tableView.model().removeRow(index.row())
+        self.model.select()
 
 
 #------------------------------- включаем редактор планировщика ----------------------------------------

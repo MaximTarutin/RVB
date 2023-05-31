@@ -2,7 +2,7 @@
 """
 
 import sys
-from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit)
+from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QTextBrowser)
 from PySide6.QtCore import (Qt, QRegularExpression)
 from PySide6.QtGui import QColor, QRegularExpressionValidator
 #------------- Делегат для таблицы в виде выпадающего списка-------------------------------
@@ -79,3 +79,7 @@ class NumericDelegate_1(QStyledItemDelegate):
                            ("^-?[0-9]{0,3}[0-9.]{0,2}$")))
         return editor
 
+class TextBrowser_delegate(QStyledItemDelegate):
+    def createEditor(self, parent, options, index):
+        editor = QTextBrowser(parent)
+        return editor

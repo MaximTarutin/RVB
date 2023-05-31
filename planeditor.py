@@ -1,13 +1,12 @@
 """ Редактор планировщика """
-# ДОДЕЛАТЬ ФУНКЦИЮ СОХРАНЕНИЯ В БАЗУ ДАННЫХ:
-#  1) Сделать проверку есть ли хоть одна запись в таблице
-#  2) Если поля заполнены корректно, то внести запись в базу данных
+# сделать делегат TextBrowser для отображения плана в таблице с переносом по строкам
 
 import sys
 from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox, QAbstractItemView)
 from PySide6.QtCore import (QDate, Qt)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import ui_planeditor
+from delegate import TextBrowser_delegate
 
 
 class PlanEditor(QMainWindow):
@@ -23,9 +22,11 @@ class PlanEditor(QMainWindow):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
 
         self.init_plan_window()
+        self.ui.tableView.resizeRowsToContents()
 
-        self.ui.pushButton_return.clicked.connect(self.closeWindow)        # Закрываем это окно
+        self.ui.pushButton_return.clicked.connect(self.closeWindow)             # Закрываем это окно
         self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
+        self.ui.pushButton_del.clicked.connect(self.__del_string)               # Удаляем выделенные строки
 
 #------------------------ Инициализация планировщика ---------------------------------------
 
@@ -33,17 +34,16 @@ class PlanEditor(QMainWindow):
         self.model.setTable("plan_table")
         self.ui.tableView.setModel(self.model)
 
-        self.model.setHeaderData(0, Qt.Horizontal, "№")                 # Оформляем таблицу
-        self.model.setHeaderData(1, Qt.Horizontal, "Дата")
+        self.model.setHeaderData(1, Qt.Horizontal, "Дата")                      # Оформляем таблицу
         self.model.setHeaderData(2, Qt.Horizontal, "Сотрудник")
         self.model.setHeaderData(3, Qt.Horizontal, "Станция")
         self.model.setHeaderData(4, Qt.Horizontal, "Работа")
-        self.ui.tableView.verticalHeader().hide()
-        self.ui.tableView.setColumnWidth(0, 30)
+
+        self.ui.tableView.hideColumn(0)
         self.ui.tableView.setColumnWidth(1, 100)
         self.ui.tableView.setColumnWidth(2, 250)
         self.ui.tableView.setColumnWidth(3, 200)
-        self.ui.tableView.resizeRowsToContents()
+
         self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
         self.model.select()
@@ -86,6 +86,7 @@ class PlanEditor(QMainWindow):
         if not self.__checking_for_availability():      # проверка нет ли такой записи уже в базе данных
             return
 
+
         DataThis = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
         NameThis = self.ui.comboBox.currentText()
         StationThis = self.ui.comboBox_2.currentText()
@@ -98,7 +99,7 @@ class PlanEditor(QMainWindow):
         self.ui.comboBox_2.setCurrentIndex(0)
         self.ui.textEdit_plan.clear()
         self.model.select()
-
+        self.ui.tableView.resizeRowsToContents()
 
 #------------------------ Проверка все ли поля заполнены перед внесением в базу ------------
 #-------------------------- если ошибок нет - возвращает истину, иначе - ложь --------------
@@ -131,13 +132,19 @@ class PlanEditor(QMainWindow):
             DataTable = self.query.value('Data')
             NameTable = self.query.value('Name')
             StationTable = self.query.value('Station')
-            print(DataThis, NameThis, StationThis)
-            print(DataTable, NameTable, StationTable)
             if DataThis==DataTable and NameThis==NameTable and StationThis==StationTable:
                 self.__error_message("\n\nРаботы на данного сотрудника в указанную дату"
                                      " на данной станциии уже запланированы\t\t\n\n")
                 return False                    # Запись не вносится
         return True                             # Запись вносится
+
+# ---------------------------------- Удаление выбранных строк --------------------------------------
+
+    def __del_string(self):
+        if self.ui.tableView.selectionModel().hasSelection():
+            for index in self.ui.tableView.selectedIndexes() or []:
+                self.ui.tableView.model().removeRow(index.row())
+        self.model.select()
 
 
 #------------------------ Окно сообщения об ошибке ------------------------------------------
