@@ -1,5 +1,5 @@
 """ Редактор планировщика """
-# сделать делегат TextBrowser для отображения плана в таблице с переносом по строкам
+# сделать отображение данных в таблице по фильтру выбранной даты
 
 import sys
 from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox, QAbstractItemView)
@@ -27,6 +27,8 @@ class PlanEditor(QMainWindow):
         self.ui.pushButton_return.clicked.connect(self.closeWindow)             # Закрываем это окно
         self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
         self.ui.pushButton_del.clicked.connect(self.__del_string)               # Удаляем выделенные строки
+        self.ui.dateEdit.dateChanged.connect(self.__date_changed)
+
 
 #------------------------ Инициализация планировщика ---------------------------------------
 
@@ -46,6 +48,7 @@ class PlanEditor(QMainWindow):
 
         self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
+
         self.model.select()
 
         self.query.exec("SELECT Name FROM workers")         # Заполняем комбобокс сотрудники
@@ -67,6 +70,11 @@ class PlanEditor(QMainWindow):
         for name in list_station:
             self.ui.comboBox_2.addItem(name)
         del list_station
+
+#-------------------------- заполняем tableView при выборе даты ---------------------------
+
+    def __date_changed(self):
+        pass
 
 #------------------------ Закрываем окно редактора -----------------------------------------
 

@@ -1,3 +1,6 @@
+# 1) Сделать фильтр по периоду, сотруднику, станции
+# 2) При выборе периода сравнивать начальную и конечную даты, исключить ошибки
+
 import sys
 import ui_planwindow
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
@@ -34,11 +37,12 @@ class Plan_Window(QMainWindow):
         self.ui.pushButton_add.clicked.connect(self.__add_plan)                      # Кнопка "Редактор"
         self.PlanEditor.ui.pushButton_return.clicked.connect(self.close_planeditor)  # события при закрытии редактора
         self.ui.pushButton_delete.clicked.connect(self.__del_string)                 # удаляем выбранные строки
+        self.ui.initial_dateEdit.dateChanged.connect(self.__data_filter)             # изменяем дату начальную
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
     def sig_admin(self, b):
-        self.FLAG_ADMIN = b                 # Не срабатывает True
+        self.FLAG_ADMIN = b
         self.programm_Mode()
 
 #-------------------------------- Режим программы (admin or user) -------------------------------------------
@@ -135,9 +139,18 @@ class Plan_Window(QMainWindow):
 
         self.__checkbox_state()
         self.model.select()
+
         self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
         self.ui.ultimate_dateEdit.setDate(QDate.currentDate())
         self.ui.initial_dateEdit.setDate(QDate.currentDate())
+        self.__data_filter()
+
+#----------------------------- Отображение данных в таблице по фильтру -----------------------------
+
+    def __data_filter(self):
+        DateSelect = str(self.ui.initial_dateEdit.date().toString('yyyy-MM-dd'))
+        self.model.setFilter("Data like '"+DateSelect+"'")
+        self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
 
 # ---------------------------------- Удаление выбранных строк --------------------------------------
 
