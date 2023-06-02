@@ -124,15 +124,16 @@ class Plan_Window(QMainWindow):
 #----------------------------------- Инициализация -------------------------------------------
 
     def init(self):
-        self.model.setHeaderData(1, Qt.Horizontal, "Дата")
-        self.model.setHeaderData(2, Qt.Horizontal, "Сотрудник")
-        self.model.setHeaderData(3, Qt.Horizontal, "Станция")
-        self.model.setHeaderData(4, Qt.Horizontal, "Работа")
+        self.model.setHeaderData(2, Qt.Horizontal, "Дата")
+        self.model.setHeaderData(3, Qt.Horizontal, "Сотрудник")
+        self.model.setHeaderData(4, Qt.Horizontal, "Станция")
+        self.model.setHeaderData(5, Qt.Horizontal, "Работа")
 
         self.ui.tableView.hideColumn(0)
-        self.ui.tableView.setColumnWidth(1, 120)
-        self.ui.tableView.setColumnWidth(2,220)
+        self.ui.tableView.hideColumn(1)
+        self.ui.tableView.setColumnWidth(2, 120)
         self.ui.tableView.setColumnWidth(3,220)
+        self.ui.tableView.setColumnWidth(4,220)
         self.ui.tableView.setWordWrap(True)
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
         self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
@@ -149,7 +150,7 @@ class Plan_Window(QMainWindow):
 
     def __data_filter(self):
         DateSelect = str(self.ui.initial_dateEdit.date().toString('yyyy-MM-dd'))
-        self.model.setFilter("Data like '"+DateSelect+"'")
+        self.model.setFilter("DataHide like '"+DateSelect+"'")
         self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
 
 # ---------------------------------- Удаление выбранных строк --------------------------------------

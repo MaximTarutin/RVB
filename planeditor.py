@@ -1,5 +1,4 @@
 """ Редактор планировщика """
-# сделать отображение данных в таблице по фильтру выбранной даты
 
 import sys
 from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox, QAbstractItemView)
@@ -27,7 +26,7 @@ class PlanEditor(QMainWindow):
         self.ui.pushButton_return.clicked.connect(self.closeWindow)             # Закрываем это окно
         self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
         self.ui.pushButton_del.clicked.connect(self.__del_string)               # Удаляем выделенные строки
-        self.ui.dateEdit.dateChanged.connect(self.__date_changed)
+        self.ui.dateEdit.dateChanged.connect(self.__data_filter)
 
 
 #------------------------ Инициализация планировщика ---------------------------------------
@@ -36,20 +35,23 @@ class PlanEditor(QMainWindow):
         self.model.setTable("plan_table")
         self.ui.tableView.setModel(self.model)
 
-        self.model.setHeaderData(1, Qt.Horizontal, "Дата")                      # Оформляем таблицу
-        self.model.setHeaderData(2, Qt.Horizontal, "Сотрудник")
-        self.model.setHeaderData(3, Qt.Horizontal, "Станция")
-        self.model.setHeaderData(4, Qt.Horizontal, "Работа")
+        self.model.setHeaderData(2, Qt.Horizontal, "Дата")                      # Оформляем таблицу
+        self.model.setHeaderData(3, Qt.Horizontal, "Сотрудник")
+        self.model.setHeaderData(4, Qt.Horizontal, "Станция")
+        self.model.setHeaderData(5, Qt.Horizontal, "Работа")
 
         self.ui.tableView.hideColumn(0)
-        self.ui.tableView.setColumnWidth(1, 100)
-        self.ui.tableView.setColumnWidth(2, 250)
-        self.ui.tableView.setColumnWidth(3, 200)
+        self.ui.tableView.hideColumn(1)
+        self.ui.tableView.setColumnWidth(2, 100)
+        self.ui.tableView.setColumnWidth(3, 250)
+        self.ui.tableView.setColumnWidth(4, 200)
 
         self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
         self.ui.tableView.horizontalHeader().setStretchLastSection(True)    # последний столбец подгоняется под таблицу
 
         self.model.select()
+
+        self.__data_filter()
 
         self.query.exec("SELECT Name FROM workers")         # Заполняем комбобокс сотрудники
         list_workers = []
@@ -73,8 +75,10 @@ class PlanEditor(QMainWindow):
 
 #-------------------------- заполняем tableView при выборе даты ---------------------------
 
-    def __date_changed(self):
-        pass
+    def __data_filter(self):
+        DateSelect = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
+        self.model.setFilter("DataHide like '" + DateSelect + "'")
+        self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
 
 #------------------------ Закрываем окно редактора -----------------------------------------
 
@@ -95,13 +99,14 @@ class PlanEditor(QMainWindow):
             return
 
 
-        DataThis = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
+        DataHide = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
+        DataThis = self.ui.dateEdit.text()
         NameThis = self.ui.comboBox.currentText()
         StationThis = self.ui.comboBox_2.currentText()
         PlanThis = self.ui.textEdit_plan.toPlainText()
 
-        self.query.exec('''INSERT INTO plan_table (Data, Name, Station, Plan)
-                           VALUES ("'''+DataThis+'''","'''+NameThis+'''","'''+StationThis+'''","'''+PlanThis+'''")''')
+        self.query.exec('''INSERT INTO plan_table (DataHide, Data, Name, Station, Plan)
+                           VALUES ("'''+DataHide+'''","'''+DataThis+'''","'''+NameThis+'''","'''+StationThis+'''","'''+PlanThis+'''")''')
 
         self.ui.comboBox.setCurrentIndex(0)             # Сбрасываем все поля в начальное состояние
         self.ui.comboBox_2.setCurrentIndex(0)

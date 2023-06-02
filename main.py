@@ -212,8 +212,9 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.model.setQuery('''CREATE TABLE password_table(IthemID INTEGER PRIMARY KEY NOT NULL,
                                                            Password  TEXT)''')
         self.model.setQuery('''CREATE TABLE plan_table (IthemID INTEGER PRIMARY KEY NOT NULL,
-                                                           Data     TEXT,    Name    TEXT,
-                                                           Station  TEXT,    Plan    TEXT)''')
+                                                           DataHide TEXT,    Data     TEXT,
+                                                           Name     TEXT,    Station  TEXT,
+                                                           Plan    TEXT)''')
         self.model.setQuery('''CREATE TABLE time_tracking(IthemID INTEGER PRIMARY KEY NOT NULL,
                                                            Name     TEXT,    Norm    REAL,
                                                            Fakt     REAL,    Otgul   REAL,      Korr    REAL,
