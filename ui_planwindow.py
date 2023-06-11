@@ -229,15 +229,6 @@ class Ui_PlanWindow(object):
 
         self.gridLayout.addWidget(self.tableView, 7, 0, 4, 10)
 
-        self.pushButton_select = QPushButton(self.centralwidget)
-        self.pushButton_select.setObjectName(u"pushButton_select")
-        self.pushButton_select.setMinimumSize(QSize(125, 25))
-        self.pushButton_select.setMaximumSize(QSize(125, 25))
-        self.pushButton_select.setFont(font)
-        self.pushButton_select.setStyleSheet(u"background-color: rgb(214, 214, 214);")
-
-        self.gridLayout.addWidget(self.pushButton_select, 5, 6, 1, 1)
-
         self.verticalSpacer = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Fixed)
 
         self.gridLayout.addItem(self.verticalSpacer, 4, 4, 1, 1)
@@ -316,7 +307,6 @@ class Ui_PlanWindow(object):
         self.label_initial_2.setText(QCoreApplication.translate("PlanWindow", u"\u043f\u043e", None))
         self.label_initial_3.setText(QCoreApplication.translate("PlanWindow", u"\u0421\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a:", None))
         self.label_initial_4.setText(QCoreApplication.translate("PlanWindow", u"\u0421\u0442\u0430\u043d\u0446\u0438\u044f (\u043f\u0435\u0440\u0435\u0433\u043e\u043d):", None))
-        self.pushButton_select.setText(QCoreApplication.translate("PlanWindow", u"\u0412\u044b\u0431\u043e\u0440", None))
         self.label_titul.setText(QCoreApplication.translate("PlanWindow", u"\u041f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0440\u0430\u0431\u043e\u0442", None))
         self.menu_service.setTitle(QCoreApplication.translate("PlanWindow", u"\u0421\u0435\u0440\u0432\u0438\u0441", None))
         self.menu_edit.setTitle(QCoreApplication.translate("PlanWindow", u"\u0420\u0435\u0434\u0430\u043a\u0442\u043e\u0440\u044b", None))

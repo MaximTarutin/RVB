@@ -37,7 +37,10 @@ class Plan_Window(QMainWindow):
         self.ui.pushButton_add.clicked.connect(self.__add_plan)                      # Кнопка "Редактор"
         self.PlanEditor.ui.pushButton_return.clicked.connect(self.close_planeditor)  # события при закрытии редактора
         self.ui.pushButton_delete.clicked.connect(self.__del_string)                 # удаляем выбранные строки
-        self.ui.initial_dateEdit.dateChanged.connect(self.__data_filter)             # изменяем дату начальную
+        self.ui.initial_dateEdit.dateChanged.connect(self.__data_filter)             # применяем фильтр к модели
+        self.ui.ultimate_dateEdit.dateChanged.connect(self.__data_filter)
+        self.ui.comboBox_workers.currentIndexChanged.connect(self.__data_filter)
+        self.ui.comboBox_station.currentIndexChanged.connect(self.__data_filter)
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
@@ -74,10 +77,13 @@ class Plan_Window(QMainWindow):
             self.ui.ultimate_dateEdit.show()
             self.ui.label_initial.show()
             self.ui.label_initial_2.show()
+            temp = self.ui.initial_dateEdit.date()              # устанавливаем минимальную конечную дату
+            self.ui.ultimate_dateEdit.setMinimumDate(temp)      # не меньше начальной
         else:
             self.ui.ultimate_dateEdit.hide()
             self.ui.label_initial.hide()
             self.ui.label_initial_2.hide()
+        self.__data_filter()
 
 
 #------------------------------------------ Закрыть окно ---------------------------------------------------
@@ -149,9 +155,27 @@ class Plan_Window(QMainWindow):
 #----------------------------- Отображение данных в таблице по фильтру -----------------------------
 
     def __data_filter(self):
-        DateSelect = str(self.ui.initial_dateEdit.date().toString('yyyy-MM-dd'))
-        self.model.setFilter("DataHide like '"+DateSelect+"'")
-        self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
+        DateSelect_one = str(self.ui.initial_dateEdit.date().toString('yyyy-MM-dd'))
+        Worker = self.ui.comboBox_workers.currentText()
+        Station = self.ui.comboBox_station.currentText()
+
+        if not self.ui.checkBox.isChecked():                                                # если выбрана одна дата
+            self.model.setFilter('''DataHide like "%'''+DateSelect_one+'''%" 
+                                    AND Name like "%'''+Worker+'''%"
+                                    AND Station like "%'''+Station+'''%"''')
+            self.ui.tableView.resizeRowsToContents()
+        else:                                                                               # если выбран период
+            if self.ui.initial_dateEdit.date() <= self.ui.ultimate_dateEdit.date():         # конечная дата не может
+                self.ui.ultimate_dateEdit.setMinimumDate(self.ui.initial_dateEdit.date())   # быть меньше начальной
+                DateSelect_two = str(self.ui.ultimate_dateEdit.date().toString('yyyy-MM-dd'))
+            else:
+                self.ui.ultimate_dateEdit.setDate(self.ui.initial_dateEdit.date())
+                self.ui.ultimate_dateEdit.setMinimumDate(self.ui.initial_dateEdit.date())
+            self.model.setFilter('''DataHide>="'''+DateSelect_one+'''" AND
+                                    DataHide<="'''+DateSelect_two+'''" AND
+                                    Name like "%'''+Worker+'''%" AND
+                                    Station like "%'''+Station+'''%"''')
+
 
 # ---------------------------------- Удаление выбранных строк --------------------------------------
 
@@ -165,6 +189,7 @@ class Plan_Window(QMainWindow):
 #------------------------------- включаем редактор планировщика ----------------------------------------
 
     def __add_plan(self):
+        self.PlanEditor.init_plan_window()
         self.PlanEditor.show()
 
 

@@ -26,7 +26,8 @@ class PlanEditor(QMainWindow):
         self.ui.pushButton_return.clicked.connect(self.closeWindow)             # Закрываем это окно
         self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
         self.ui.pushButton_del.clicked.connect(self.__del_string)               # Удаляем выделенные строки
-        self.ui.dateEdit.dateChanged.connect(self.__data_filter)
+        self.ui.dateEdit.dateChanged.connect(self.__data_filter)                # применяем фильтр
+        self.ui.comboBox.currentIndexChanged.connect(self.__data_filter)
 
 
 #------------------------ Инициализация планировщика ---------------------------------------
@@ -58,16 +59,19 @@ class PlanEditor(QMainWindow):
         while self.query.next():
             name = self.query.value("Name")
             list_workers.append(name)
+        self.ui.comboBox.clear()
         self.ui.comboBox.addItem("")
+
         for name in list_workers:
             self.ui.comboBox.addItem(name)
         del list_workers
 
-        self.query.exec("SELECT NAME FROM station")
+        self.query.exec("SELECT Name FROM station")
         list_station = []
         while self.query.next():
             name = self.query.value("NAME")
             list_station.append(name)
+        self.ui.comboBox_2.clear()
         self.ui.comboBox_2.addItem("")
         for name in list_station:
             self.ui.comboBox_2.addItem(name)
@@ -77,7 +81,9 @@ class PlanEditor(QMainWindow):
 
     def __data_filter(self):
         DateSelect = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
-        self.model.setFilter("DataHide like '" + DateSelect + "'")
+        Worker = self.ui.comboBox.currentText()
+        self.model.setFilter('''DataHide like "%''' + DateSelect + '''%"
+                                AND Name like "%''' + Worker + '''%"''')
         self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
 
 #------------------------ Закрываем окно редактора -----------------------------------------
@@ -96,9 +102,10 @@ class PlanEditor(QMainWindow):
         if not self.__check_to_data():                  # проверка все ли поля заполнены
             return
         if not self.__checking_for_availability():      # проверка нет ли такой записи уже в базе данных
+            print("Такая запись есть")
             return
 
-
+        print("Такой записи нет")
         DataHide = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
         DataThis = self.ui.dateEdit.text()
         NameThis = self.ui.comboBox.currentText()
@@ -134,15 +141,13 @@ class PlanEditor(QMainWindow):
 #----------- для этого проверяем на совпадение поля дата, станция и сотрудник --------------
 
     def __checking_for_availability(self):
-        count = 0
-        self.query.exec('SELECT Data, Name, Station FROM plan_table')
-
+        self.query.exec('SELECT DataHide, Name, Station FROM plan_table')
         DataThis = str(self.ui.dateEdit.date().toString('yyyy-MM-dd'))
         NameThis = self.ui.comboBox.currentText()
         StationThis = self.ui.comboBox_2.currentText()
 
         while self.query.next():
-            DataTable = self.query.value('Data')
+            DataTable = self.query.value('DataHide')
             NameTable = self.query.value('Name')
             StationTable = self.query.value('Station')
             if DataThis==DataTable and NameThis==NameTable and StationThis==StationTable:
