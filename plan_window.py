@@ -22,8 +22,6 @@ class Plan_Window(QMainWindow):
         self.PlanEditor= PlanEditor()
 
         self.query = QSqlQuery()
-        self.__set_list_workers()
-        self.__set_list_stations()
 
         self.model = QSqlTableModel()
         self.model.setTable("plan_table")
@@ -150,6 +148,8 @@ class Plan_Window(QMainWindow):
         self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
         self.ui.ultimate_dateEdit.setDate(QDate.currentDate())
         self.ui.initial_dateEdit.setDate(QDate.currentDate())
+        self.__set_list_workers()
+        self.__set_list_stations()
         self.__data_filter()
 
 #----------------------------- Отображение данных в таблице по фильтру -----------------------------
@@ -175,6 +175,7 @@ class Plan_Window(QMainWindow):
                                     DataHide<="'''+DateSelect_two+'''" AND
                                     Name like "%'''+Worker+'''%" AND
                                     Station like "%'''+Station+'''%"''')
+            self.ui.tableView.resizeRowsToContents()
 
 
 # ---------------------------------- Удаление выбранных строк --------------------------------------

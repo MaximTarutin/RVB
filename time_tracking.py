@@ -10,7 +10,6 @@ from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 from PySide6.QtCore import (Qt, Signal)
 from delegate import (NoEditorDelegate, NumericDelegate, NumericDelegate_1)
 import passwrd
-import worker
 import otgulwindow
 
 class Time_tracking(QMainWindow):
@@ -26,7 +25,6 @@ class Time_tracking(QMainWindow):
         self.ui.setupUi(self)
         self.ui.action_return.setText("&Назад")
         self.passwordWindow = passwrd.PasswordWindow()
-        self.workerWindow = worker.WorkerWindow()
         self.query = QSqlQuery()
 
         self.model = QSqlTableModel(self)               # Создаем модель и связываем таблицу

@@ -30,16 +30,6 @@ class Ui_planEditor(object):
         planEditor.resize(1200, 700)
         planEditor.setMinimumSize(QSize(1200, 700))
         planEditor.setStyleSheet(u"background-color: rgb(135, 161, 255);")
-        self.action_workers = QAction(planEditor)
-        self.action_workers.setObjectName(u"action_workers")
-        self.action_stations = QAction(planEditor)
-        self.action_stations.setObjectName(u"action_stations")
-        self.action_return = QAction(planEditor)
-        self.action_return.setObjectName(u"action_return")
-        self.action_moduls = QAction(planEditor)
-        self.action_moduls.setObjectName(u"action_moduls")
-        self.action_about = QAction(planEditor)
-        self.action_about.setObjectName(u"action_about")
         self.centralwidget = QWidget(planEditor)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_3 = QGridLayout(self.centralwidget)
@@ -275,26 +265,9 @@ class Ui_planEditor(object):
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 1)
 
         planEditor.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(planEditor)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1200, 22))
-        self.menu_editor = QMenu(self.menubar)
-        self.menu_editor.setObjectName(u"menu_editor")
-        self.menu_help = QMenu(self.menubar)
-        self.menu_help.setObjectName(u"menu_help")
-        planEditor.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(planEditor)
         self.statusbar.setObjectName(u"statusbar")
         planEditor.setStatusBar(self.statusbar)
-
-        self.menubar.addAction(self.menu_editor.menuAction())
-        self.menubar.addAction(self.menu_help.menuAction())
-        self.menu_editor.addAction(self.action_workers)
-        self.menu_editor.addAction(self.action_stations)
-        self.menu_editor.addSeparator()
-        self.menu_editor.addAction(self.action_return)
-        self.menu_help.addAction(self.action_moduls)
-        self.menu_help.addAction(self.action_about)
 
         self.retranslateUi(planEditor)
 
@@ -303,11 +276,6 @@ class Ui_planEditor(object):
 
     def retranslateUi(self, planEditor):
         planEditor.setWindowTitle(QCoreApplication.translate("planEditor", u"\u0420\u0435\u0434\u0430\u043a\u0442\u043e\u0440 \u043f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u0449\u0438\u043a\u0430", None))
-        self.action_workers.setText(QCoreApplication.translate("planEditor", u"&\u0421\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0438", None))
-        self.action_stations.setText(QCoreApplication.translate("planEditor", u"\u0421\u0442\u0430\u043d\u0446\u0438\u0438 \u0438 &\u043f\u0435\u0440\u0435\u0433\u043e\u043d\u044b", None))
-        self.action_return.setText(QCoreApplication.translate("planEditor", u"&\u041d\u0430\u0437\u0430\u0434", None))
-        self.action_moduls.setText(QCoreApplication.translate("planEditor", u"&\u041c\u043e\u0434\u0443\u043b\u0438", None))
-        self.action_about.setText(QCoreApplication.translate("planEditor", u"&\u041e \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0435", None))
         self.label_about.setText(QCoreApplication.translate("planEditor", u"\u0420\u0435\u0434\u0430\u043a\u0442\u043e\u0440 \u0441\u0443\u0442\u043e\u0447\u043d\u043e\u0433\u043e \u043f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f", None))
         self.label_4.setText(QCoreApplication.translate("planEditor", u"\u0420\u0430\u0431\u043e\u0442\u0430", None))
         self.pushButton_add.setText(QCoreApplication.translate("planEditor", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
@@ -316,7 +284,6 @@ class Ui_planEditor(object):
         self.label_3.setText(QCoreApplication.translate("planEditor", u"\u0421\u0442\u0430\u043d\u0446\u0438\u044f", None))
         self.pushButton_del.setText(QCoreApplication.translate("planEditor", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c", None))
         self.pushButton_return.setText(QCoreApplication.translate("planEditor", u"\u041d\u0430\u0437\u0430\u0434", None))
-        self.menu_editor.setTitle(QCoreApplication.translate("planEditor", u"\u0420\u0435\u0434\u0430\u043a\u0442\u043e\u0440\u044b", None))
-        self.menu_help.setTitle(QCoreApplication.translate("planEditor", u"\u041f\u043e\u043c\u043e\u0449\u044c", None))
+
     # retranslateUi
 

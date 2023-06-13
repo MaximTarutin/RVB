@@ -59,7 +59,9 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.programm_Mode()                        # Настройка активных пунктов меню в зависимости от режима программы
 
 
-#------------------------ Обработчики событий ----------------------------------------------------
+#------------------------ Обработчики событий --------------------------------------------------------------------
+
+        # ************* События модуля main.py **************
 
         self.action_exit.triggered.connect(self.exitofprogramm)                         # меню выход из программы
         self.action_worker.triggered.connect(self.open_workerWindow)                    # меню редактор сотрудников
@@ -74,6 +76,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.button_1.clicked.connect(self.open_time_tracking)                          # кнопка учет времени сотрудник
         self.button_3.clicked.connect(self.open_planwindow)                             # кнопка планировщик работ
 
+        # ************* События модуля time_tracking.py **************
 
         self.timeTrackingWindow.ui.action_workers.triggered. \
             connect(self.open_workerWindow)                                             # меню редактор сотрудников
@@ -86,22 +89,29 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.timeTrackingWindow.ui.action_password.triggered. \
             connect(self.edit_passwordWindow)                                           # меню изменить пароль
 
+        # ************* События модуля worker.py **************
+
         self.workerWindow.ui.button_return.clicked.connect(self.close_workerWindow)     # Закрыть редактор сотрудников
         self.workerWindow.ui.action_return.triggered.connect(self.close_workerWindow)   # Закрыть редактор сотрудников
-
         self.stationWindow.ui.button_return.clicked.connect(self.close_stationWindow)    # Закрыть редактор станций
         self.stationWindow.ui.action_return.triggered.connect(self.close_stationWindow)  # Закрыть редактор станций
+
+        # ************ События модуля password.py **************
 
         self.passwordWindow.admin_signal[bool].connect(self.sig_admin)                      # принимаем сигнал режима
         self.passwordWindow.admin_signal[bool].connect(self.timeTrackingWindow.sig_admin)   # программы (админ или юзер)
         self.passwordWindow.admin_signal[bool].connect(self.planWindow.sig_admin)
-
         self.newPasswordWindow.ui.button_Cancel.clicked.connect(self.close)                 # если пароль не создан
                                                                                             # то программа не запустится
+        # ************ События модуля plan_window.py **************
+
         self.planWindow.ui.action_admin.triggered.connect \
             (self.open_passwordWindow)                                                  # меню режим администратора
         self.planWindow.ui.action_user.triggered.connect(self.user_Mode)                # меню режим пользователя
+        self.planWindow.ui.action_workers.triggered.connect(self.open_workerWindow)     # меню редактор сотрудников
+        self.planWindow.ui.action_stations.triggered.connect(self.open_stationWindow)   # меню редактор станций
 
+#-------------------------- Сигналы ---------------------------------------
 
         self.admin_signal[bool].connect(self.sig_admin)                                 # посылаем сигнал во все окна
         self.admin_signal[bool].connect(self.timeTrackingWindow.sig_admin)
@@ -132,6 +142,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.workerWindow.close()
         self.timeTrackingWindow.compare_lists()
         self.timeTrackingWindow.init_table()
+        self.planWindow.init()
 
 # ------------- Показать окно редактора станций ----- --------------------------------------------
 
@@ -143,6 +154,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
     def close_stationWindow(self):
         self.del_empty_string()
         self.stationWindow.close()
+        self.planWindow.init()
 
 # ------------- Показать окно смены пароля -------------------------------------------------
 
@@ -170,6 +182,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
 # ------------------ Показать окно планировщика работ ----------------------------------------------
 
     def open_planwindow(self):
+        self.planWindow.init()
         self.planWindow.show()
 
 #----------- Удаление пустых строк в таблице сотрудников и станций при закрытии окон редакторов --------------
