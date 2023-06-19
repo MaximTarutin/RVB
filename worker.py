@@ -25,7 +25,7 @@ class WorkerWindow(QMainWindow):
 
         self.query = QSqlQuery()
         self.model = QSqlTableModel(self)  # Создаем модель и связываем таблицу
-        self.model.setTable("workers")  # с моделью
+        self.model.setTable("workers")     # с моделью
         self.model.select()
         self.ui.tableView.setModel(self.model)
 

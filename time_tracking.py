@@ -5,7 +5,7 @@ import sys
 import ui_time_tracking
 from calendar import monthrange
 from datetime import datetime
-from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QMessageBox)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 from PySide6.QtCore import (Qt, Signal)
 from delegate import (NoEditorDelegate, NumericDelegate, NumericDelegate_1)
@@ -34,6 +34,8 @@ class Time_tracking(QMainWindow):
         self.ui.comboBox_month.setCurrentIndex(self.Cur_Month-1)
         self.calculation()
 
+        self.msg = QMessageBox()
+
 #------------------------- Обработка сигналов ---------------------------------------------------------------
 
         self.ui.pushButton_return.clicked.connect(self.return_of_window)        # Кнопка вернуться назад
@@ -44,6 +46,7 @@ class Time_tracking(QMainWindow):
         self.ui.checkBox_korr.clicked.connect(self.check_checkbox)              # проверка состояния чекбокса
         self.ui.pushButton_Otgul.clicked.connect(self.__show_win_otgul)         # показать окно отгулов
         self.ui.action_otgul.triggered.connect(self.__show_win_otgul)
+        self.ui.tableView.doubleClicked.connect(self.__click_to_table)
 
 #-------------------------- Инициализация таблицы -----------------------------------------------------------
     def init_table(self):
@@ -120,9 +123,9 @@ class Time_tracking(QMainWindow):
             count+=1
         if count==0:                                        # Если таблица пуста, то вносим первую запись
             for i in name_table_workers:
-                self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,
-                                                              d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,d24,d25,d26,d27,
-                                                              d28,d29,d30,d31, month, year, summa)   
+                self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,
+                                                              d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,
+                                                              d24,d25,d26,d27,d28,d29,d30,d31, month, year, summa)   
                                 VALUES ("''' + i + '''","0", "0", "0", "0","0","0","0","0","0","0","0","0","0",
                                         "0","0","0","0","0","0","0","0","0","0","0","0","0","0",
                                         "0","0","0","0","0","0","0", "''' + str(month) + '''", 
@@ -136,17 +139,58 @@ class Time_tracking(QMainWindow):
             count += 1
         if count == 0:
             for i in name_table_workers:
-                self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,
-                                                                d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,d24,d25,d26,d27,
-                                                                d28,d29,d30,d31, month, year, summa)   
-                                                VALUES ("''' + i + '''", "0", "0", "0", "0","0","0","0","0","0","0","0","0","0",
-                                                        "0","0","0","0","0","0","0","0","0","0","0","0","0","0",
+                self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,
+                                                                d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,
+                                                                d24,d25,d26,d27,d28,d29,d30,d31, month, year, summa)   
+                                                VALUES ("''' + i + '''", "0", "0", "0", "0","0","0","0","0","0","0","0",
+                                                        "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",
                                                         "0","0","0","0","0","0","0", "''' + str(month) + '''", 
                                                         "''' + str(year) + '''", "0")''')
 
         self.model.setFilter("month like '" + str(month) + "' AND year like '" + str(year) + "'")
         self.model.select()
         self.calculation()
+
+#--------------------------- Клик по таблице вызывает информацию о данном рабочем дне -----------------------
+
+    def __click_to_table(self):
+        if self.FLAG_ADMIN: return     # если права администратора, то функцию не выполняем
+
+        # ячейки с датами в таблице от 6 до 36
+        temp = self.ui.tableView.currentIndex().column()
+        if temp >= 6 and temp <= 36:
+            cur_row = self.ui.tableView.currentIndex().row()            # получаем выбранную дату в формате yyyy-mm-dd
+            cur_column = self.ui.tableView.currentIndex().column()
+            select_day = cur_column - 5
+            if select_day < 10 : select_day = "0"+str(select_day)
+            select_month = self.ui.comboBox_month.currentIndex()+1
+            if select_month < 10 : select_month = "0"+str(select_month)
+            select_year = self.ui.spinBox_year.text()
+            select_data = select_year+'-'+str(select_month)+'-'+str(select_day)
+            name_workers = self.ui.tableView.model().index(cur_row, 1).data()   # получаем ФИО сотрудника
+
+            # Находим данные по сотруднику на выбранный день из таблицы plan_table
+            plantext=""
+            count=0
+            self.query.exec('SELECT * FROM plan_table')
+            while self.query.next():
+                datahide = self.query.value("DataHide")
+                data = self.query.value("Data")
+                name = self.query.value("Name")
+                station = self.query.value("Station")
+                plan = self.query.value("Plan")
+                if datahide == select_data and name == name_workers :
+                    plantext += str(count+1)+") "+station+"\n     "+plan+"\n"
+                    count += 1
+                    name1 = name
+            self.query.next()
+            if count == 0:
+                plantext = "Данных нет"
+                name1 = ""
+            self.msg.setWindowTitle("План")
+            self.msg.setText(name1+"\n"+data+"\n"+plantext)
+            self.msg.exec()
+            plantext=""
 
 
 #--------------------------- Закрыть окно --------------------------------------------------------------------
@@ -249,12 +293,12 @@ class Time_tracking(QMainWindow):
             for y_l in year_list:
                 for m_l in month_list:
                     if m_l >= self.Cur_Month and y_l >= self.Cur_Year:
-                        self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,
-                                                                      d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,
-                                                                      d22,d23,d24,d25,d26,d27,d28,d29,d30,d31, month, 
-                                                                      year,summa)   
-                                            VALUES ("''' + name + '''", "0", "0", "0", "0","0","0","0","0","0","0","0","0","0",
-                                                    "0","0","0","0","0","0","0","0","0","0","0","0","0","0",
+                        self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,
+                                                                      d08,d09,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,
+                                                                      d20,d21,d22,d23,d24,d25,d26,d27,d28,d29,d30,d31, 
+                                                                      month,year,summa)   
+                                            VALUES ("''' + name + '''", "0", "0", "0", "0","0","0","0","0","0","0","0",
+                                                    "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",
                                                     "0","0","0","0","0","0","0", "''' + str(m_l) + '''", 
                                                     "''' + str(y_l) + '''", "0")''')
         self.model.select()
