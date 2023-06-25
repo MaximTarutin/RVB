@@ -44,4 +44,5 @@ class OtgulWindow(QWidget):
 if __name__=='_main__':
     app = QApplication(sys.argv)
     mywindow = OtgulWindow()
+    mywindow.show()
     sys.exit(app.exec())

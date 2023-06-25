@@ -2,13 +2,13 @@
 """ -----  Модуль ведения учета рабочего времени работников бригады РЦС ----- """
 
 import sys
-import ui_time_tracking
 from calendar import monthrange
 from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QMessageBox)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 from PySide6.QtCore import (Qt, Signal)
 from delegate import (NoEditorDelegate, NumericDelegate, NumericDelegate_1)
+import ui_time_tracking
 import passwrd
 import otgulwindow
 
@@ -350,4 +350,5 @@ class Time_tracking(QMainWindow):
 if __name__=='__main__':
     app = QApplication(sys.argv)
     mywindow = Time_tracking()
+    mywindow.show()
     sys.exit(app.exec())

@@ -6,17 +6,18 @@
 """
 
 import sys
-import time_tracking
-import worker
-import mainwindow
-import passwrd
-import plan_window
 import rc_res
 from PySide6.QtCore import (Qt, Signal)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 from PySide6.QtSql import (QSqlDatabase, QSqlQueryModel, QSqlQuery)
+import time_tracking
+import worker
+import ui_mainwindow
+import passwrd
+import plan_window
+import comments_main
 
-class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
+class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     admin_signal = Signal(bool)
     def __init__(self):
         super().__init__()
@@ -26,6 +27,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.passwordWindow = passwrd.PasswordWindow()                  # окно ввода пароля
         self.editPasswordWindow = passwrd.PasswordWindow()              # окно смены пароля
         self.newPasswordWindow = passwrd.PasswordWindow()               # окно ввода нового пароля при первом запуске
+        self.commentsMain = comments_main.Comments_main()               # модуль работы с замечаниями
 
         self.query = QSqlQuery()
         self.model = QSqlQueryModel(self)
@@ -68,6 +70,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.action_time.triggered.connect(self.open_time_tracking)                     # меню учет рабочего времени
         self.action_station.triggered.connect(self.open_stationWindow)                  # меню редактор станций
         self.action_plan.triggered.connect(self.open_planwindow)                        # меню планирование работ
+        self.action_remark.triggered.connect(self.open_comments_main)                   # меню модуль замечаний
         self.action_admin.triggered.connect(self.open_passwordWindow)                   # меню режим администратора
         self.action_user.triggered.connect(self.user_Mode)                              # меню режим пользователя
         self.action_user.triggered.connect(self.sig_admin)
@@ -75,6 +78,7 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.Button_exit.clicked.connect(self.exitofprogramm)                           # кнопка выход из программы
         self.button_1.clicked.connect(self.open_time_tracking)                          # кнопка учет времени сотрудник
         self.button_3.clicked.connect(self.open_planwindow)                             # кнопка планировщик работ
+        self.button_2.clicked.connect(self.open_comments_main)                          # кнопка модуль замечаний
 
         # ************* События модуля time_tracking.py **************
 
@@ -103,13 +107,17 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
         self.passwordWindow.admin_signal[bool].connect(self.planWindow.sig_admin)
         self.newPasswordWindow.ui.button_Cancel.clicked.connect(self.close)                 # если пароль не создан
                                                                                             # то программа не запустится
-        # ************ События модуля plan_window.py **************
+        # ************ События модуля plan_window.py ******************
 
         self.planWindow.ui.action_admin.triggered.connect \
             (self.open_passwordWindow)                                                  # меню режим администратора
         self.planWindow.ui.action_user.triggered.connect(self.user_Mode)                # меню режим пользователя
         self.planWindow.ui.action_workers.triggered.connect(self.open_workerWindow)     # меню редактор сотрудников
         self.planWindow.ui.action_stations.triggered.connect(self.open_stationWindow)   # меню редактор станций
+
+        # ************* события модуля comments_main.py ****************
+
+        pass
 
 #-------------------------- Сигналы ---------------------------------------
 
@@ -128,6 +136,11 @@ class MyWindow(QMainWindow, mainwindow.Ui_MainWindow):
 
     def user_Mode(self):
         self.admin_signal[bool].emit(False)
+
+# ------------- Показать главное окно модуля замечаний ----------------------------------------
+
+    def open_comments_main(self):
+        self.commentsMain.show()
 
 #------------- Показать окно редактора сотрудников --------------------------------------------
 
@@ -299,6 +312,7 @@ if __name__ == '__main__':
         db.open()
     app = QApplication(sys.argv)
     mywindow = MyWindow()
+    mywindow.show()
     sys.exit(app.exec())
 
 

@@ -196,4 +196,5 @@ class Plan_Window(QMainWindow):
 if __name__ == "main":
     app = QApplication(sys.argv)
     mywindow = Plan_Window()
+    mywindow.show()
     sys.exit(app.exec())

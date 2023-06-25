@@ -179,4 +179,5 @@ class PasswordWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     mywindow = PasswordWindow()
+    mywindow.show()
     sys.exit(app.exec())
