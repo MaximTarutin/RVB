@@ -26,7 +26,8 @@ class Ui_CommentsNew(object):
     def setupUi(self, CommentsNew):
         if not CommentsNew.objectName():
             CommentsNew.setObjectName(u"CommentsNew")
-        CommentsNew.resize(1089, 706)
+        CommentsNew.setWindowModality(Qt.ApplicationModal)
+        CommentsNew.resize(1114, 706)
         self.action_admin = QAction(CommentsNew)
         self.action_admin.setObjectName(u"action_admin")
         self.action_user = QAction(CommentsNew)
@@ -124,6 +125,8 @@ class Ui_CommentsNew(object):
         self.gridLayout.addItem(self.horizontalSpacer_5, 1, 4, 1, 1)
 
         self.Komiss_Box = QComboBox(self.centralwidget)
+        self.Komiss_Box.addItem("")
+        self.Komiss_Box.addItem("")
         self.Komiss_Box.addItem("")
         self.Komiss_Box.addItem("")
         self.Komiss_Box.addItem("")
@@ -321,7 +324,7 @@ class Ui_CommentsNew(object):
         CommentsNew.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(CommentsNew)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1089, 22))
+        self.menubar.setGeometry(QRect(0, 0, 1114, 22))
         self.menu_service = QMenu(self.menubar)
         self.menu_service.setObjectName(u"menu_service")
         self.menu_editors = QMenu(self.menubar)
@@ -370,8 +373,10 @@ class Ui_CommentsNew(object):
         self.Komiss_Box.setItemText(2, QCoreApplication.translate("CommentsNew", u"\u0417\u0430\u043c. \u043f\u043e \u0440\u0435\u0433\u0438\u043e\u043d\u0443", None))
         self.Komiss_Box.setItemText(3, QCoreApplication.translate("CommentsNew", u"\u0420\u0435\u0432\u0438\u0437\u043e\u0440\u0441\u043a\u0438\u0439 \u0430\u043f\u043f\u0430\u0440\u0430\u0442", None))
         self.Komiss_Box.setItemText(4, QCoreApplication.translate("CommentsNew", u"\u0414\u043d\u0438 \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u0438", None))
-        self.Komiss_Box.setItemText(5, QCoreApplication.translate("CommentsNew", u"\u041e\u0445\u0440\u0430\u043d\u0430 \u0442\u0440\u0443\u0434\u0430", None))
-        self.Komiss_Box.setItemText(6, QCoreApplication.translate("CommentsNew", u"\u0421\u0442\u0430\u0440\u0448\u0438\u0439 \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043c\u0435\u0445\u0430\u043d\u0438\u043a", None))
+        self.Komiss_Box.setItemText(5, QCoreApplication.translate("CommentsNew", u"\u041e\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0439 \u0438\u043d\u0441\u043f\u0435\u043a\u0442\u043e\u0440", None))
+        self.Komiss_Box.setItemText(6, QCoreApplication.translate("CommentsNew", u"\u041e\u0445\u0440\u0430\u043d\u0430 \u0442\u0440\u0443\u0434\u0430", None))
+        self.Komiss_Box.setItemText(7, QCoreApplication.translate("CommentsNew", u"\u0421\u0442\u0430\u0440\u0448\u0438\u0439 \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043c\u0435\u0445\u0430\u043d\u0438\u043a", None))
+        self.Komiss_Box.setItemText(8, QCoreApplication.translate("CommentsNew", u"\u0414\u0440\u0443\u0433\u043e\u0435", None))
 
         self.label_comission.setText(QCoreApplication.translate("CommentsNew", u"\u041a\u043e\u043c\u0438\u0441\u0441\u0438\u044f:", None))
         self.label_act.setText(QCoreApplication.translate("CommentsNew", u"\u2116 \u043f\u043e \u0430\u043a\u0442\u0443", None))

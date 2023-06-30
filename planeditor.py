@@ -113,7 +113,8 @@ class PlanEditor(QMainWindow):
         PlanThis = self.ui.textEdit_plan.toPlainText()
 
         self.query.exec('''INSERT INTO plan_table (DataHide, Data, Name, Station, Plan)
-                           VALUES ("'''+DataHide+'''","'''+DataThis+'''","'''+NameThis+'''","'''+StationThis+'''","'''+PlanThis+'''")''')
+                           VALUES ("'''+DataHide+'''","'''+DataThis+'''","'''+NameThis+'''","'''+StationThis+
+                                    '''","'''+PlanThis+'''")''')
 
         self.ui.comboBox.setCurrentIndex(0)             # Сбрасываем все поля в начальное состояние
         self.ui.comboBox_2.setCurrentIndex(0)

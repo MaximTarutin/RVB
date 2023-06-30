@@ -7,7 +7,7 @@
 
 import sys
 import rc_res
-from PySide6.QtCore import (Qt, Signal)
+from PySide6.QtCore import (Signal)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 from PySide6.QtSql import (QSqlDatabase, QSqlQueryModel, QSqlQuery)
 import time_tracking
@@ -16,6 +16,7 @@ import ui_mainwindow
 import passwrd
 import plan_window
 import comments_main
+import comments_new
 
 class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     admin_signal = Signal(bool)
@@ -28,6 +29,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.editPasswordWindow = passwrd.PasswordWindow()              # окно смены пароля
         self.newPasswordWindow = passwrd.PasswordWindow()               # окно ввода нового пароля при первом запуске
         self.commentsMain = comments_main.Comments_main()               # модуль работы с замечаниями
+        self.commentsNew = comments_new.New_Comments_Window()           # Модуль ввода замечаний
 
         self.query = QSqlQuery()
         self.model = QSqlQueryModel(self)
@@ -105,6 +107,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.passwordWindow.admin_signal[bool].connect(self.sig_admin)                      # принимаем сигнал режима
         self.passwordWindow.admin_signal[bool].connect(self.timeTrackingWindow.sig_admin)   # программы (админ или юзер)
         self.passwordWindow.admin_signal[bool].connect(self.planWindow.sig_admin)
+        self.passwordWindow.admin_signal[bool].connect(self.commentsNew.sig_admin)
         self.newPasswordWindow.ui.button_Cancel.clicked.connect(self.close)                 # если пароль не создан
                                                                                             # то программа не запустится
         # ************ События модуля plan_window.py ******************
@@ -117,13 +120,25 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
         # ************* события модуля comments_main.py ****************
 
-        pass
+        self.commentsMain.ui.newcommit_button.clicked.connect(self.openCommentsNew)     # открыть модуль ввода замечаний
+        self.commentsMain.ui.return_button.clicked.connect(self.close_comments_main)
+
+        #************** события модуля comments_new.py *****************
+
+        self.commentsNew.ui.Return_pushButton.clicked.connect(self.closeCommentsNew)    # закрыть модуль ввода замечаний
+        self.commentsNew.ui.action_return.triggered.connect(self.closeCommentsNew)
+        self.commentsNew.ui.action_admin.triggered.connect(self.open_passwordWindow)    # перейти в режим администратора
+        self.commentsNew.ui.action_user.triggered.connect(self.user_Mode)               # перейти в режим пользователя
+        self.commentsNew.ui.action_workers.triggered.connect(self.open_workerWindow)    # меню редактор сотрудников
+        self.commentsNew.ui.action_stations.triggered.connect(self.open_stationWindow)  # меню редактор станций
+
 
 #-------------------------- Сигналы ---------------------------------------
 
-        self.admin_signal[bool].connect(self.sig_admin)                                 # посылаем сигнал во все окна
+        self.admin_signal[bool].connect(self.sig_admin)                                 # принимаем сигнал во всех окнах
         self.admin_signal[bool].connect(self.timeTrackingWindow.sig_admin)
         self.admin_signal[bool].connect(self.planWindow.sig_admin)
+        self.admin_signal[bool].connect(self.commentsNew.sig_admin)
 
         self.user_Mode()  # Включаем режим пользователя
 
@@ -137,10 +152,26 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def user_Mode(self):
         self.admin_signal[bool].emit(False)
 
+#-------------- Показать модуль ввода новых замечаний ----------------------------------------
+
+    def openCommentsNew(self):
+        self.commentsNew.initial()
+        self.commentsNew.show()
+
+#--------------- Закрыть модуль ввода новых замечаний ----------------------------------------
+
+    def closeCommentsNew(self):
+        self.commentsNew.close()
+
 # ------------- Показать главное окно модуля замечаний ----------------------------------------
 
     def open_comments_main(self):
         self.commentsMain.show()
+
+#---------------- Закрыть главное окно модуля замечаний --------------------------------------
+
+    def close_comments_main(self):
+        self.commentsMain.close()
 
 #------------- Показать окно редактора сотрудников --------------------------------------------
 
@@ -156,6 +187,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.timeTrackingWindow.compare_lists()
         self.timeTrackingWindow.init_table()
         self.planWindow.init()
+        self.commentsNew.initial()
 
 # ------------- Показать окно редактора станций ----- --------------------------------------------
 
@@ -168,6 +200,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.del_empty_string()
         self.stationWindow.close()
         self.planWindow.init()
+        self.commentsNew.initial()
 
 # ------------- Показать окно смены пароля -------------------------------------------------
 
@@ -263,7 +296,13 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                                                            year     INTEGER, summa   REAL)''')
         self.model.setQuery('''CREATE TABLE otgul_table(IthemID INTEGER PRIMARY KEY NOT NULL,
                                                            name    TEXT,    hour    REAL)''')
-        #self.model.query()
+        self.model.setQuery('''CREATE TABLE comments_table(IthemID INTEGER PRIMARY KEY NOT NULL,
+                                                            number      TEXT,    data        TEXT,
+                                                            station     TEXT,    auditor     TEXT,    
+                                                            comment     TEXT,    term_data   TEXT,    
+                                                            worker      TEXT,    performance TEXT,    
+                                                            old_data    TEXT,    what_is     TEXT,    
+                                                            foto        TEXT)''')
 
         self.query.exec('SELECT Password FROM password_table')
         count = 0

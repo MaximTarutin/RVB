@@ -3,7 +3,7 @@
 import sys
 import ui_planwindow
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
-from PySide6.QtCore import (Qt, Signal, QDate)
+from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
 from planeditor import PlanEditor
