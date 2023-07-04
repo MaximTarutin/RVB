@@ -18,7 +18,6 @@ class New_Comments_Window(QMainWindow):
         self.query = QSqlQuery()
         self.initial()
 
-        self.ui.Return_pushButton.clicked.connect(self.close_this_window)
         self.ui.Add_pushButton.clicked.connect(self.add_to_db)
 
 # ------------------ Инициализация ---------------------------------------
@@ -96,6 +95,7 @@ class New_Comments_Window(QMainWindow):
         if self.FLAG_CHECK:
             number = self.ui.act_lineEdit.text()
             station = self.ui.Stations_Box.currentText()
+            kommis = self.ui.Komiss_Box.currentText()
             auditor = self.ui.auditor_lineedit.text()
             comments = self.ui.text_textEdit.toPlainText()
             termdata = self.ui.term_dateEdit.text()
@@ -105,13 +105,14 @@ class New_Comments_Window(QMainWindow):
             what_is = ""
             foto = ""
             olddata = ""
-            self.query.exec('''INSERT INTO comments_table (number, data, station, auditor, comment, term_data, worker,
-                                                           performance, old_data, what_is, foto)
-                                VALUES ("'''+number+'''","'''+data+'''","'''+station+'''","'''+auditor+'''",
-                                        "'''+comments+'''","'''+termdata+'''","'''+worker+'''","'''+performance+'''",
-                                        "'''+olddata+'''","'''+what_is+'''","'''+foto+'''")''')
+            self.query.exec('''INSERT INTO comments_table (number, data, kommis, station, auditor, comment,
+                                                           term_data, worker, performance, old_data, what_is, foto)
+                                VALUES ("'''+number+'''","'''+data+'''","'''+kommis+'''","'''+station+'''",
+                                        "'''+auditor+'''","'''+comments+'''","'''+termdata+'''","'''+worker+'''",
+                                        "'''+performance+'''","'''+olddata+'''","'''+what_is+'''","'''+foto+'''")''')
             self.ui.act_lineEdit.clear()
             self.ui.Stations_Box.setCurrentIndex(0)
+            self.ui.Komiss_Box.setCurrentIndex(0)
             self.ui.auditor_lineedit.clear()
             self.ui.text_textEdit.clear()
             self.ui.Executor_Box.setCurrentIndex(0)
@@ -155,12 +156,6 @@ class New_Comments_Window(QMainWindow):
         self.msg.setWindowTitle('Внимание!')
         self.msg.setText(text)
         self.msg.exec()
-
-
-#----------------- Закрыть это окно -------------------------------------
-    
-    def close_this_window(self):
-        self.close()
 
 #----------------------------------------------------------------------------------------------------------------------
 

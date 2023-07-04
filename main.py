@@ -121,7 +121,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         # ************* события модуля comments_main.py ****************
 
         self.commentsMain.ui.newcommit_button.clicked.connect(self.openCommentsNew)     # открыть модуль ввода замечаний
-        self.commentsMain.ui.return_button.clicked.connect(self.close_comments_main)
+        self.commentsMain.ui.return_button.clicked.connect(self.close_comments_main)    # закрыть окно
 
         #************** события модуля comments_new.py *****************
 
@@ -131,7 +131,6 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsNew.ui.action_user.triggered.connect(self.user_Mode)               # перейти в режим пользователя
         self.commentsNew.ui.action_workers.triggered.connect(self.open_workerWindow)    # меню редактор сотрудников
         self.commentsNew.ui.action_stations.triggered.connect(self.open_stationWindow)  # меню редактор станций
-
 
 #-------------------------- Сигналы ---------------------------------------
 
@@ -162,10 +161,12 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     def closeCommentsNew(self):
         self.commentsNew.close()
+        self.commentsMain.statistic()           # подсчитываем количество неустраненных замечаний
 
 # ------------- Показать главное окно модуля замечаний ----------------------------------------
 
     def open_comments_main(self):
+        self.commentsMain.statistic()
         self.commentsMain.show()
 
 #---------------- Закрыть главное окно модуля замечаний --------------------------------------
@@ -298,11 +299,11 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                                                            name    TEXT,    hour    REAL)''')
         self.model.setQuery('''CREATE TABLE comments_table(IthemID INTEGER PRIMARY KEY NOT NULL,
                                                             number      TEXT,    data        TEXT,
-                                                            station     TEXT,    auditor     TEXT,    
-                                                            comment     TEXT,    term_data   TEXT,    
-                                                            worker      TEXT,    performance TEXT,    
-                                                            old_data    TEXT,    what_is     TEXT,    
-                                                            foto        TEXT)''')
+                                                            kommis      TEXT,    station     TEXT,    
+                                                            auditor     TEXT,    comment     TEXT,    
+                                                            term_data   TEXT,    worker      TEXT,    
+                                                            performance TEXT,    old_data    TEXT,    
+                                                            what_is     TEXT,    foto        BLOB)''')
 
         self.query.exec('SELECT Password FROM password_table')
         count = 0
