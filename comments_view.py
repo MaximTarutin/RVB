@@ -1,9 +1,11 @@
 """ ---------- Модуль просмотра замечаний --------------"""
 
 import sys
-from PySide6.QtCore import (Qt)
-from PySide6.QtWidgets import (QApplication, QMainWindow)
-from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
+from PySide6.QtCore import (Qt, QRect)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QStyledItemDelegate)
+from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
+from PySide6.QtGui import QBrush, QColor
+from delegate import NumericDelegate
 import ui_commentsview
 
 class Comments_View(QMainWindow):
@@ -18,6 +20,8 @@ class Comments_View(QMainWindow):
 
         self.query = QSqlQuery()
         self.model = QSqlTableModel()
+        #self.model = MyModel()
+
         self.model.setTable("comments_table")
         self.ui.tableView.setModel(self.model)
 
@@ -87,7 +91,7 @@ class Comments_View(QMainWindow):
         del list_kommis
 
         self.ui.tableView.verticalHeader().hide()
-        self.ui.tableView.setColumnHidden(0, True)
+        #self.ui.tableView.setColumnHidden(0, True)
         self.model.setHeaderData(1, Qt.Horizontal, "№")
         self.model.setHeaderData(2, Qt.Horizontal, "Дата")
         self.model.setHeaderData(3, Qt.Horizontal, "Комиссия")
@@ -131,9 +135,25 @@ class Comments_View(QMainWindow):
         self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND 
                                 auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND 
                                 performance like "'''+performance+'''%"''')
+        self.__color_row()
+
+#------------------ Закрашиваем ячейку с номером замечания в зависимости от выполнения --------------------------
+
+    def __color_row(self):
+        self.query.exec("SELECT performance FROM comments_table")      #0xe3ebf8
+        deleg = NumericDelegate()
+        self.model.select()
+        count = self.ui.tableView.model().rowCount()
+        print(count)
+        for i in range(0, count):
+            #index = self.ui.tableView.model().index(i,9)
+            #print(self.ui.tableView.model().data(index))
+            #if self.ui.tableView.model().data(index) == "Не выполнено":
+            self.ui.tableView.setItemDelegateForRow(i, deleg)
 
 
-# ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
+
+    # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
     def sig_admin(self, b):
         self.FLAG_ADMIN = b

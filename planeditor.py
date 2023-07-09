@@ -5,8 +5,6 @@ from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox, QAbstract
 from PySide6.QtCore import (QDate, Qt)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import ui_planeditor
-from delegate import TextBrowser_delegate
-
 
 class PlanEditor(QMainWindow):
     def __init__(self, parent=None):

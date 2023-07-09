@@ -7,7 +7,6 @@ from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
 from planeditor import PlanEditor
-from delegate import TextBrowser_delegate
 
 class Plan_Window(QMainWindow):
     def __init__(self, parent = None):

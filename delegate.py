@@ -1,10 +1,10 @@
 """ ------ Делегаты для QTableView ------
 """
 
-import sys
-from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QTextBrowser)
+from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit)
 from PySide6.QtCore import (Qt, QRegularExpression)
 from PySide6.QtGui import QColor, QRegularExpressionValidator
+
 #------------- Делегат для таблицы в виде выпадающего списка-------------------------------
 
 class Worker_delegate(QStyledItemDelegate):
@@ -55,6 +55,8 @@ class NumericDelegate(QStyledItemDelegate):
                 color = "lightblue"     # Командировка
             case 'п' | 'П':
                 color = "red"           # Прогул
+            case 'Не выполнено':
+                color = "red"
 
         option.backgroundBrush = QColor(color)
 
@@ -70,7 +72,7 @@ class NumericDelegate(QStyledItemDelegate):
 class NumericDelegate_1(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
-        text = option.text
+        #text = option.text
         option.displayAlignment = Qt.AlignCenter
     def createEditor(self, parent, option, index):
         editor = QLineEdit(parent)
@@ -79,7 +81,27 @@ class NumericDelegate_1(QStyledItemDelegate):
                            ("^-?[0-9]{0,3}[0-9.]{0,2}$")))
         return editor
 
-class TextBrowser_delegate(QStyledItemDelegate):
-    def createEditor(self, parent, options, index):
-        editor = QTextBrowser(parent)
+#------------------------------------------ Цвет устранения замечаний ------------------------------------------------
+
+class NumericDelegate(QStyledItemDelegate):
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        text = option.text
+        option.displayAlignment = Qt.AlignCenter
+        color = "#e6e6e6"
+        match text:
+            case 'Просрочено':
+                color = "red"
+            case 'Выполнено':
+                color = "lightgreen"
+            case 'Подходит срок':
+                color = "yellow"
+
+        option.backgroundBrush = QColor(color)
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        option.displayAlignment = Qt.AlignCenter
+        editor.setValidator(QRegularExpressionValidator(QRegularExpression \
+                           ("[0-9,о,О,у,У,н,Н,б,Б,в,В,к,К,п,П]{0,1}[0-9.]{0,2}")))
         return editor
