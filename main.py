@@ -156,7 +156,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 #------------- Выход из программы --------------------------------------------------------------
 
     def exitofprogramm(self):
-        exit(0)
+        self.close()
 
 # ------------- Переключение в режим пользователя----------------------------------------------
 
@@ -167,7 +167,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     def openCommentView(self):
         self.commentsView.initial()
-        self.commentsView.show()
+        self.commentsView.showMaximized()
 
 #-------------- Закрыть модуль просмотра и редактирования замечаний (comments_view.py) ------------------------
 

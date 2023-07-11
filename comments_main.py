@@ -28,7 +28,9 @@ class Comments_main(QWidget):
         foreman = 0             # неустраненные замечания старшего электромеханика
         other = 0               # прочие неустраненные замечания
 
-        self.query.exec("SELECT kommis, performance FROM comments_table WHERE performance='Не выполнено'")
+        self.query.exec('''SELECT kommis, performance FROM comments_table WHERE performance = "Не выполнено" OR
+                           performance = "Подходит срок" OR performance = "Просрочено" OR 
+                           performance = "Выполнить сегодня"''')
         while self.query.next():
             commission = self.query.value("kommis")
             count+=1

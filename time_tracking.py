@@ -6,7 +6,7 @@ from calendar import monthrange
 from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QMessageBox)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
-from PySide6.QtCore import (Qt, Signal)
+from PySide6.QtCore import (Qt)
 from delegate import (NoEditorDelegate, NumericDelegate, NumericDelegate_1)
 import ui_time_tracking
 import passwrd
@@ -188,12 +188,11 @@ class Time_tracking(QMainWindow):
                 plantext = "Данных нет"
                 name1 = ""
             self.msg.setWindowTitle("План")
-            self.msg.setText(name1+"\n"+data+"\n"+plantext)
+            self.msg.setText(name1+"\n"+plantext)
             self.msg.exec()
-            plantext=""
-
 
 #--------------------------- Закрыть окно --------------------------------------------------------------------
+
     def return_of_window(self):
         self.calculation()
         self.close()

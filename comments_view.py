@@ -1,11 +1,11 @@
 """ ---------- Модуль просмотра замечаний --------------"""
 
 import sys
-from PySide6.QtCore import (Qt, QRect)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QStyledItemDelegate)
+from PySide6.QtCore import (Qt)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
-from PySide6.QtGui import QBrush, QColor
-from delegate import NumericDelegate
+from datetime import date, datetime
+from delegate import ColorDelegate, NoEditorDelegate, Worker_delegate
 import ui_commentsview
 
 class Comments_View(QMainWindow):
@@ -20,8 +20,8 @@ class Comments_View(QMainWindow):
 
         self.query = QSqlQuery()
         self.model = QSqlTableModel()
-        #self.model = MyModel()
-
+        self.deleg = ColorDelegate(self)
+        self.delegat = NoEditorDelegate(self)
         self.model.setTable("comments_table")
         self.ui.tableView.setModel(self.model)
 
@@ -29,6 +29,9 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("")
         self.ui.performance_Box.addItem("Выполнено")
         self.ui.performance_Box.addItem("Не выполнено")
+        self.ui.performance_Box.addItem("Подходит срок")
+        self.ui.performance_Box.addItem("Выполнить сегодня")
+        self.ui.performance_Box.addItem("Просрочено")
         self.initial()
 
         self.ui.edit_checkBox.stateChanged.connect(self.check_checkBox)
@@ -90,8 +93,8 @@ class Comments_View(QMainWindow):
         del new_list_kommis
         del list_kommis
 
-        self.ui.tableView.verticalHeader().hide()
-        #self.ui.tableView.setColumnHidden(0, True)
+        self.ui.tableView.setColumnHidden(0, True)
+
         self.model.setHeaderData(1, Qt.Horizontal, "№")
         self.model.setHeaderData(2, Qt.Horizontal, "Дата")
         self.model.setHeaderData(3, Qt.Horizontal, "Комиссия")
@@ -106,6 +109,15 @@ class Comments_View(QMainWindow):
         self.model.setHeaderData(12, Qt.Horizontal, "Фото")
         self.model.select()
 
+        self.ui.tableView.setItemDelegateForColumn(1, self.delegat)       # запрещаем редактирование некоторых столбцов
+        self.ui.tableView.setItemDelegateForColumn(2, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(3, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(4, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(5, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(6, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(5, self.delegat)
+        self.ui.tableView.setItemDelegateForColumn(9, self.delegat)
+
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)
         self.ui.tableView.setColumnWidth(3, 160)
@@ -119,7 +131,11 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setColumnWidth(11,400)
         self.ui.tableView.setColumnWidth(12, 20)
 
-        self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
+        self.ui.tableView.resizeRowsToContents()                                    # Содержимое вписывается в ячейку
+        self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers |        # Разрешаем редактирование таблицы
+                                          QAbstractItemView.DoubleClicked)          # по двойному клику мышки
+        self.ui.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)        # Разрешаем выделение строк
+        self.__compare_date()
         self.__data_filter()
 
 
@@ -140,26 +156,51 @@ class Comments_View(QMainWindow):
 #------------------ Закрашиваем ячейку с номером замечания в зависимости от выполнения --------------------------
 
     def __color_row(self):
-        self.query.exec("SELECT performance FROM comments_table")      #0xe3ebf8
-        deleg = NumericDelegate()
-        self.model.select()
-        count = self.ui.tableView.model().rowCount()
-        print(count)
-        for i in range(0, count):
-            #index = self.ui.tableView.model().index(i,9)
-            #print(self.ui.tableView.model().data(index))
-            #if self.ui.tableView.model().data(index) == "Не выполнено":
-            self.ui.tableView.setItemDelegateForRow(i, deleg)
+        self.ui.tableView.setItemDelegateForColumn(9, self.deleg)
+
+#------------------------------ Сравниваем даты для изменения статуса выполнения -------------------------------------
+
+    def __compare_date(self):
+        list_overdue = []                                       # список просроченных замечаний
+        list_soon_data = []                                     # список замечаний у которых подходит срок (10 дней)
+        list_today = []                                         # список замечаний которые нужно выполнить сегодня
+        self.query.exec("SELECT * FROM comments_table")
+        while self.query.next():
+            id_in_table = self.query.value("IthemID")
+            d0 = self.query.value("term_data")
+            performance = self.query.value("performance")
+            d0 = datetime.strptime(d0,"%d.%m.%Y").date()
+            data_1 = date.today()
+            period = (d0-data_1).days
+
+            if period < 0 and performance != "Выполнено":
+                list_overdue.append(id_in_table)
+            if period > 0 and period <=10 and performance != "Выполнено":
+                list_soon_data.append(id_in_table)
+            if period == 0 and performance != "Выполнено":
+                list_today.append(id_in_table)
+
+        for i in list_overdue:
+            self.query.exec('''UPDATE comments_table SET performance = "Просрочено"
+                               WHERE IthemID = '''+str(i))
+        for i in list_soon_data:
+            self.query.exec('''UPDATE comments_table SET performance = "Подходит срок"
+                               WHERE IthemID = '''+str(i))
+        for i in list_today:
+            self.query.exec('''UPDATE comments_table SET performance = "Выполнить сегодня"
+                               WHERE IthemID = '''+str(i))
+        self.__color_row()
 
 
 
-    # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
+# ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
     def sig_admin(self, b):
         self.FLAG_ADMIN = b
         self.programm_Mode()
 
 #------------------------- Переключение режима работы программы (админ или пользователь) -----------------------------
+
     def programm_Mode(self):
         if self.FLAG_ADMIN:
             self.ui.action_Admin.setEnabled(False)
@@ -177,15 +218,17 @@ class Comments_View(QMainWindow):
             self.ui.edit_checkBox.setEnabled(False)
             self.ui.edit_checkBox.setChecked(False)
             self.ui.del_Button.setEnabled(False)
+            self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
 #----------------------- Проверка состояния чекбокса --------------------------------------
 
     def check_checkBox(self):
         if self.ui.edit_checkBox.isChecked():
             self.ui.del_Button.setEnabled(True)
+            self.ui.tableView.setEditTriggers(QAbstractItemView.AllEditTriggers)  # Разрешаем редактировать таблицу.
         else:
             self.ui.del_Button.setEnabled(False)
-
+            self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)   # Запрет редактирования таблицы.
 #--------------------------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":

@@ -83,7 +83,7 @@ class NumericDelegate_1(QStyledItemDelegate):
 
 #------------------------------------------ Цвет устранения замечаний ------------------------------------------------
 
-class NumericDelegate(QStyledItemDelegate):
+class ColorDelegate(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         text = option.text
@@ -96,12 +96,9 @@ class NumericDelegate(QStyledItemDelegate):
                 color = "lightgreen"
             case 'Подходит срок':
                 color = "yellow"
-
+            case 'Выполнить сегодня':
+                color = "pink"
         option.backgroundBrush = QColor(color)
 
     def createEditor(self, parent, option, index):
-        editor = QLineEdit(parent)
-        option.displayAlignment = Qt.AlignCenter
-        editor.setValidator(QRegularExpressionValidator(QRegularExpression \
-                           ("[0-9,о,О,у,У,н,Н,б,Б,в,В,к,К,п,П]{0,1}[0-9.]{0,2}")))
-        return editor
+        return
