@@ -35,6 +35,7 @@ class Time_tracking(QMainWindow):
         self.calculation()
 
         self.msg = QMessageBox()
+        self.ui.pushButton_save.hide()
 
 #------------------------- Обработка сигналов ---------------------------------------------------------------
 
@@ -42,7 +43,7 @@ class Time_tracking(QMainWindow):
         self.ui.action_return.triggered.connect(self.return_of_window)          # Меню вернуться назад
         self.ui.spinBox_year.valueChanged.connect(self.init_table)              # Изменение года обновляем таблицу
         self.ui.comboBox_month.currentTextChanged.connect(self.init_table)      # Изменение месяца обновляем таблицу
-        self.ui.pushButton_save.clicked.connect(self.calculation)               # Расчет времени и сохранение
+        self.model.dataChanged.connect(self.calculation)                        # Расчет времени и сохранение
         self.ui.checkBox_korr.clicked.connect(self.check_checkbox)              # проверка состояния чекбокса
         self.ui.pushButton_Otgul.clicked.connect(self.__show_win_otgul)         # показать окно отгулов
         self.ui.action_otgul.triggered.connect(self.__show_win_otgul)
@@ -212,7 +213,6 @@ class Time_tracking(QMainWindow):
             self.ui.action_stations.setDisabled(True)
             self.ui.action_workers.setDisabled(True)
             self.ui.action_password.setDisabled(True)
-            self.ui.pushButton_save.setDisabled(True)
             self.ui.checkBox_korr.setDisabled(True)
             self.ui.checkBox_korr.setChecked(False)
             self.ui.tableView.setColumnHidden(5, True)
@@ -224,7 +224,6 @@ class Time_tracking(QMainWindow):
             self.ui.action_workers.setEnabled(True)
             self.ui.action_stations.setEnabled(True)
             self.ui.action_password.setEnabled(True)
-            self.ui.pushButton_save.setEnabled(True)
             self.ui.checkBox_korr.setEnabled(True)
             self.ui.tableView.setEditTriggers(QAbstractItemView.AllEditTriggers)    # Разрешить редактировать таблицу
             self.model.setEditStrategy(QSqlTableModel.OnFieldChange)
@@ -320,6 +319,7 @@ class Time_tracking(QMainWindow):
             self.query.exec('''UPDATE time_tracking SET summa=(SELECT SUM(Otgul) FROM time_tracking 
             WHERE Name="'''+name+'''") WHERE Name="'''+name+'''"''')
         self.query.next()
+        self.model.submitAll()
         self.model.select()
 
 

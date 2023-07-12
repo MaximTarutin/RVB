@@ -1,9 +1,20 @@
 """ ------ Делегаты для QTableView ------
 """
 
-from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit)
-from PySide6.QtCore import (Qt, QRegularExpression)
+from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit)
+from PySide6.QtCore import (Qt, QRegularExpression, QDate)
 from PySide6.QtGui import QColor, QRegularExpressionValidator
+
+#------------- Делегат выбора даты --------------------------------------------------------
+
+class Date_delegate(QStyledItemDelegate):
+    def createEditor(self, parent, options, index):
+        editor = QDateEdit(parent)
+        d = QDate.currentDate().toString(self,"dd.MM.yyyy")
+        editor.setDate(d)
+        return editor
+
+
 
 #------------- Делегат для таблицы в виде выпадающего списка-------------------------------
 
@@ -98,6 +109,8 @@ class ColorDelegate(QStyledItemDelegate):
                 color = "yellow"
             case 'Выполнить сегодня':
                 color = "pink"
+            case 'Не выполнено':
+                color = 0xe3ebf8
         option.backgroundBrush = QColor(color)
 
     def createEditor(self, parent, option, index):
