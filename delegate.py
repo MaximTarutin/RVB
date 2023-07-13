@@ -8,17 +8,22 @@ from PySide6.QtGui import QColor, QRegularExpressionValidator
 #------------- Делегат выбора даты --------------------------------------------------------
 
 class Date_delegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def createEditor(self, parent, options, index):
         editor = QDateEdit(parent)
-        d = QDate.currentDate().toString(self,"dd.MM.yyyy")
+        d = QDate.currentDate()
         editor.setDate(d)
+        editor.setCalendarPopup(True)
         return editor
-
-
 
 #------------- Делегат для таблицы в виде выпадающего списка-------------------------------
 
 class Worker_delegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def createEditor(self, parent, options, index):
         editor = QComboBox(parent)
         editor.addItem('Старший электромеханик')
@@ -33,12 +38,18 @@ class Worker_delegate(QStyledItemDelegate):
 #------------ Делегат запрещает редактирование ячеек -------------------------------------
 
 class NoEditorDelegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def createEditor(self, parent, option, index):
         return
 
 #----------  Делегат устанавливает текст в ячейке по центру -----------------------------
 
 class AlignDelegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def initStyleOption(self, option, index):
         super(AlignDelegate, self).initStyleOption(option, index)
         option.displayAlignment = Qt.AlignCenter
@@ -46,6 +57,9 @@ class AlignDelegate(QStyledItemDelegate):
 #--- Валидатор, только числа и определенные символы, один или 2 знака, закрашивает по условию -----------
 
 class NumericDelegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         text = option.text
@@ -81,10 +95,14 @@ class NumericDelegate(QStyledItemDelegate):
 #--- Валидатор, только числа и определенные символы, один или 3 знака -----------
 
 class NumericDelegate_1(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         #text = option.text
         option.displayAlignment = Qt.AlignCenter
+
     def createEditor(self, parent, option, index):
         editor = QLineEdit(parent)
         option.displayAlignment = Qt.AlignCenter
@@ -95,6 +113,9 @@ class NumericDelegate_1(QStyledItemDelegate):
 #------------------------------------------ Цвет устранения замечаний ------------------------------------------------
 
 class ColorDelegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         text = option.text

@@ -20,8 +20,8 @@ class Comments_View(QMainWindow):
 
         self.query = QSqlQuery()
 
-        self.deleg = ColorDelegate(self)
-        self.delegat = NoEditorDelegate(self)
+        self.color_delegat = ColorDelegate(self)
+        self.no_edit_delegat = NoEditorDelegate(self)
         self.date_delegat = Date_delegate(self)
 
         self.model = QSqlTableModel(self)
@@ -38,7 +38,6 @@ class Comments_View(QMainWindow):
         self.model.setHeaderData(10, Qt.Horizontal, "Дата")
         self.model.setHeaderData(11, Qt.Horizontal, "Отметка о выполнении")
         self.model.setHeaderData(12, Qt.Horizontal, "Фото")
-        #self.model.select()
 
         self.ui.tableView.setModel(self.model)
 
@@ -51,13 +50,14 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("Просрочено")
 
         self.ui.tableView.setColumnHidden(0, True)
-        self.ui.tableView.setItemDelegateForColumn(1, self.delegat)  # запрещаем редактирование некоторых столбцов
-        self.ui.tableView.setItemDelegateForColumn(2, self.delegat)
-        self.ui.tableView.setItemDelegateForColumn(3, self.delegat)
-        self.ui.tableView.setItemDelegateForColumn(4, self.delegat)
-        self.ui.tableView.setItemDelegateForColumn(5, self.delegat)
-        self.ui.tableView.setItemDelegateForColumn(6, self.delegat)
-        self.ui.tableView.setItemDelegateForColumn(9, self.deleg)
+        self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat)  # запрещаем редактирование некоторых столбцов
+        self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat)
+        self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
+        self.ui.tableView.setItemDelegateForColumn(4, self.no_edit_delegat)
+        self.ui.tableView.setItemDelegateForColumn(5, self.no_edit_delegat)
+        self.ui.tableView.setItemDelegateForColumn(6, self.no_edit_delegat)
+        self.ui.tableView.setItemDelegateForColumn(7, self.date_delegat)
+        self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)
 
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)
@@ -182,7 +182,21 @@ class Comments_View(QMainWindow):
                 list_today.append(id_in_table)
             if period > 10 and performance != "Выполнено":
                 list_not_done.append(id_in_table)
-
+        """
+            if len(d1)==0 or d1.isspace()==False or len(workers)==0 or workers.isspace()==False or \
+               len(what_is)==0 or what_is.isspace()==False:
+                if period < 0:
+                    list_overdue.append(id_in_table)
+                if period > 0 and period <=10:
+                    list_soon_data.append(id_in_table)
+                if period == 0:
+                    list_today.append(id_in_table)
+                if period > 10:
+                    list_not_done.append(id_in_table)
+            elif (len(d1)!=0 or d1.isspace()) and (len(workers)!=0 or workers.isspace()) and \
+                 (len(what_is)!=0 or what_is.isspace()):
+                list_done.append(id_in_table) 
+        """
         for i in list_overdue:
             self.query.exec('''UPDATE comments_table SET performance = "Просрочено"
                                WHERE IthemID = '''+str(i))
