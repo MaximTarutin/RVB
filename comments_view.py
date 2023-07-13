@@ -81,7 +81,7 @@ class Comments_View(QMainWindow):
         self.ui.auditor_Box.currentIndexChanged.connect(self.__data_filter)
         self.ui.worker_Box.currentIndexChanged.connect(self.__data_filter)
         self.ui.performance_Box.currentIndexChanged.connect(self.__data_filter)
-        self.model.dataChanged.connect(self.proverka)
+        self.model.dataChanged.connect(self.__proverka)
 
 #------------------------- Инициализация -------------------------------
 
@@ -118,7 +118,7 @@ class Comments_View(QMainWindow):
             list_kommis.append(name_kommis)
             list_auditor.append(name_auditor)
         new_list_kommis = set(list_kommis)
-        new_list_auditor = set(list_auditor)                    # убираем дубликаты проверяющих из списка
+        new_list_auditor = set(list_auditor)                    # убираем дубликаты из списков
         self.ui.commis_Box.clear()
         self.ui.commis_Box.addItem("")
         for i in new_list_kommis:
@@ -151,13 +151,14 @@ class Comments_View(QMainWindow):
                                 auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND 
                                 performance like "'''+performance+'''%"''')
 
-#------------------------------ Сравниваем даты для изменения статуса выполнения -------------------------------------
+#------------------------------  изменение статуса выполнения -------------------------------------
 
     def __compare_date(self):
         list_overdue = []                                       # список просроченных замечаний
         list_soon_data = []                                     # список замечаний у которых подходит срок (10 дней)
         list_today = []                                         # список замечаний которые нужно выполнить сегодня
         list_not_done = []                                      # список невыполненных замечаний
+        list_done = []                                          # список выполненных замечаний
         self.query.exec("SELECT * FROM comments_table")
         while self.query.next():
             id_in_table = self.query.value("IthemID")
@@ -166,7 +167,13 @@ class Comments_View(QMainWindow):
             d0 = datetime.strptime(d0,"%d.%m.%Y").date()
             data_1 = date.today()
             period = (d0-data_1).days
+            workers = self.query.value("worker")
+            d1 = self.query.value("old_data")
+            what_is = self.query.value("what_is")
 
+            if (len(d1)!=0 or d1.isspace()) and (len(workers)!=0 or workers.isspace()) and \
+               (len(what_is)!=0 or what_is.isspace()):
+                list_done.append(id_in_table)
             if period < 0 and performance != "Выполнено":
                 list_overdue.append(id_in_table)
             if period > 0 and period <=10 and performance != "Выполнено":
@@ -188,11 +195,15 @@ class Comments_View(QMainWindow):
         for i in list_not_done:
             self.query.exec('''UPDATE comments_table SET performance = "Не выполнено"
                                WHERE IthemID = '''+str(i))
+        for i in list_done:
+            self.query.exec('''UPDATE comments_table SET performance = "Выполнено"
+                               WHERE IthemID = '''+str(i))
 
         list_not_done.clear()
         list_today.clear()
         list_overdue.clear()
         list_soon_data.clear()
+        list_done.clear()
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
@@ -227,15 +238,15 @@ class Comments_View(QMainWindow):
         if self.ui.edit_checkBox.isChecked():
             self.ui.del_Button.setEnabled(True)
             self.ui.tableView.setEditTriggers(QAbstractItemView.AllEditTriggers)  # Разрешаем редактировать таблицу.
-            #self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers |  # Разрешаем редактирование таблицы
-            #                                  QAbstractItemView.DoubleClicked)  # по двойному клику мышки
+            self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers |  # Разрешаем редактирование таблицы
+                                              QAbstractItemView.DoubleClicked)    # по двойному клику мышки
         else:
             self.ui.del_Button.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)   # Запрет редактирования таблицы.
 
     # ------------------------------------------------------------------
 
-    def proverka(self):
+    def __proverka(self):
         self.__compare_date()
         self.model.submitAll()
         self.model.select()
