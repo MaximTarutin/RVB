@@ -254,20 +254,29 @@ class Comments_View(QMainWindow):
 
     def __format_date(self):
         temp = {}
-        self.query.exec("SELECT IthemID, term_data FROM comments_table")
+        temp1 = {}
+        self.query.exec("SELECT IthemID, term_data, old_data FROM comments_table")
         while self.query.next():
-            d = self.query.value("term_data")
-            it_id = self.query.value("IthemID")
-            new_d = QDate.fromString(d, "yyyy-MM-dd")
-            new_d = new_d.toString("dd.MM.yyyy")
-            if len(new_d) > 0:
-                temp[it_id] = new_d
-                print(new_d)
-                print(temp)
+            t_d = self.query.value("term_data")
+            o_d = self.query.value("old_data")
+            t_it_id = self.query.value("IthemID")
+            o_it_id = self.query.value("IthemID")
+            new_t_d = QDate.fromString(t_d, "yyyy-MM-dd")
+            new_t_d = new_t_d.toString("dd.MM.yyyy")
+            new_o_d = QDate.fromString(o_d, "yyyy-MM-dd")
+            new_o_d = new_o_d.toString("dd.MM.yyyy")
+            if len(new_t_d) > 0:
+                temp[t_it_id] = new_t_d
+            if len(new_o_d) > 0:
+                temp1[o_it_id] = new_o_d
         for i in list(temp):
             tmp = temp[i]
             self.query.exec('''UPDATE comments_table SET term_data="''' + str(tmp) + '''" WHERE IthemID=''' + str(i))
+        for i in list(temp1):
+            tmp1 = temp1[i]
+            self.query.exec('''UPDATE comments_table SET old_data="''' + str(tmp1) + '''" WHERE IthemID=''' + str(i))
         temp.clear()
+        temp1.clear()
 
 #----------- Проверка статуса замечаний (выполнено, невыполнено, просрочено и т.д. --------------------------------
 
