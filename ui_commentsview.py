@@ -16,11 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QSizePolicy, QSpacerItem, QStatusBar, QTableView,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
+    QFrame, QGridLayout, QHBoxLayout, QHeaderView,
+    QLabel, QMainWindow, QMenu, QMenuBar,
+    QPushButton, QSizePolicy, QSpacerItem, QStatusBar,
+    QTableView, QVBoxLayout, QWidget)
 
 class Ui_CommentsView(object):
     def setupUi(self, CommentsView):
@@ -200,21 +200,33 @@ class Ui_CommentsView(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_11)
 
-        self.ZaprosButton = QPushButton(self.centralwidget)
-        self.ZaprosButton.setObjectName(u"ZaprosButton")
-        self.ZaprosButton.setMinimumSize(QSize(160, 30))
-        self.ZaprosButton.setMaximumSize(QSize(160, 30))
+        self.edit_checkBox = QCheckBox(self.centralwidget)
+        self.edit_checkBox.setObjectName(u"edit_checkBox")
 
-        self.horizontalLayout_3.addWidget(self.ZaprosButton)
+        self.horizontalLayout_3.addWidget(self.edit_checkBox)
 
         self.horizontalSpacer_12 = QSpacerItem(78, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_12)
 
-        self.edit_checkBox = QCheckBox(self.centralwidget)
-        self.edit_checkBox.setObjectName(u"edit_checkBox")
+        self.day_dateEdit = QDateEdit(self.centralwidget)
+        self.day_dateEdit.setObjectName(u"day_dateEdit")
+        self.day_dateEdit.setWrapping(False)
+        self.day_dateEdit.setProperty("showGroupSeparator", False)
+        self.day_dateEdit.setMinimumDateTime(QDateTime(QDate(1752, 9, 17), QTime(0, 0, 0)))
+        self.day_dateEdit.setCalendarPopup(True)
+        self.day_dateEdit.setDate(QDate(2023, 1, 1))
 
-        self.horizontalLayout_3.addWidget(self.edit_checkBox)
+        self.horizontalLayout_3.addWidget(self.day_dateEdit)
+
+        self.horizontalSpacer_18 = QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_18)
+
+        self.edit_checkBox_data = QCheckBox(self.centralwidget)
+        self.edit_checkBox_data.setObjectName(u"edit_checkBox_data")
+
+        self.horizontalLayout_3.addWidget(self.edit_checkBox_data)
 
         self.horizontalSpacer_13 = QSpacerItem(578, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -371,8 +383,8 @@ class Ui_CommentsView(object):
         self.performance_Box.setItemText(1, QCoreApplication.translate("CommentsView", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u043e", None))
         self.performance_Box.setItemText(2, QCoreApplication.translate("CommentsView", u"\u041d\u0435 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u043e", None))
 
-        self.ZaprosButton.setText(QCoreApplication.translate("CommentsView", u"\u0417\u0430\u043f\u0440\u043e\u0441", None))
         self.edit_checkBox.setText(QCoreApplication.translate("CommentsView", u"\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u0440\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", None))
+        self.edit_checkBox_data.setText(QCoreApplication.translate("CommentsView", u"\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0444\u0438\u043b\u044c\u0442\u0440 \u043f\u043e \u0434\u0430\u0442\u0435 \u0437\u0430\u043c\u0435\u0447\u0430\u043d\u0438\u044f", None))
         self.del_Button.setText(QCoreApplication.translate("CommentsView", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u0441\u0442\u0440\u043e\u043a\u0438", None))
         self.excel_Button.setText(QCoreApplication.translate("CommentsView", u"\u042d\u043a\u0441\u043f\u043e\u0440\u0442 \u0432 Excel", None))
         self.return_pushButton.setText(QCoreApplication.translate("CommentsView", u"\u041d\u0430\u0437\u0430\u0434", None))
