@@ -1,7 +1,7 @@
 """ ---------- Модуль просмотра замечаний --------------"""
 
 import sys
-from PySide6.QtCore import (Qt)
+from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import date, datetime
@@ -246,9 +246,29 @@ class Comments_View(QMainWindow):
             self.ui.del_Button.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)   # Запрет редактирования таблицы.
 
-    # ------------------------------------------------------------------
+# ------------- Меняем формат даты в делегате -----------------------------------------------------------------------
+
+    def __format_date(self):
+        temp = {}
+        self.query.exec("SELECT IthemID, term_data FROM comments_table")
+        while self.query.next():
+            d = self.query.value("term_data")
+            it_id = self.query.value("IthemID")
+            new_d = QDate.fromString(d, "yyyy-MM-dd")
+            new_d = new_d.toString("dd.MM.yyyy")
+            if len(new_d) > 0:
+                temp[it_id] = new_d
+                print(new_d)
+                print(temp)
+        for i in list(temp):
+            tmp = temp[i]
+            self.query.exec('''UPDATE comments_table SET term_data="''' + str(tmp) + '''" WHERE IthemID=''' + str(i))
+        temp.clear()
+
+#----------- Проверка статуса замечаний (выполнено, невыполнено, просрочено и т.д. --------------------------------
 
     def __proverka(self):
+        self.__format_date()
         self.__compare_date()
         self.model.submitAll()
         self.model.select()
