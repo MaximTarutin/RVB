@@ -163,7 +163,6 @@ class Comments_View(QMainWindow):
         while self.query.next():
             id_in_table = self.query.value("IthemID")
             d0 = self.query.value("term_data")
-            performance = self.query.value("performance")
             d0 = datetime.strptime(d0,"%d.%m.%Y").date()
             data_1 = date.today()
             period = (d0-data_1).days
@@ -171,32 +170,21 @@ class Comments_View(QMainWindow):
             d1 = self.query.value("old_data")
             what_is = self.query.value("what_is")
 
-            if (len(d1)!=0 or d1.isspace()) and (len(workers)!=0 or workers.isspace()) and \
-               (len(what_is)!=0 or what_is.isspace()):
+            # Если поля срок, исполнитель и что сделано заполнены, то ставим в поле выполнение статус "Выполнено",
+            # иначе выставляем статус в зависимости от разницы сроки и текущей даты
+
+            if (len(d1) != 0 or d1.isspace()) and (len(workers) != 0 or workers.isspace()) and \
+                    (len(what_is) != 0 or what_is.isspace()):
                 list_done.append(id_in_table)
-            if period < 0 and performance != "Выполнено":
+            elif period < 0:
                 list_overdue.append(id_in_table)
-            if period > 0 and period <=10 and performance != "Выполнено":
+            elif period > 0 and period <= 10:
                 list_soon_data.append(id_in_table)
-            if period == 0 and performance != "Выполнено":
+            elif period == 0:
                 list_today.append(id_in_table)
-            if period > 10 and performance != "Выполнено":
+            elif period > 10:
                 list_not_done.append(id_in_table)
-        """
-            if len(d1)==0 or d1.isspace()==False or len(workers)==0 or workers.isspace()==False or \
-               len(what_is)==0 or what_is.isspace()==False:
-                if period < 0:
-                    list_overdue.append(id_in_table)
-                if period > 0 and period <=10:
-                    list_soon_data.append(id_in_table)
-                if period == 0:
-                    list_today.append(id_in_table)
-                if period > 10:
-                    list_not_done.append(id_in_table)
-            elif (len(d1)!=0 or d1.isspace()) and (len(workers)!=0 or workers.isspace()) and \
-                 (len(what_is)!=0 or what_is.isspace()):
-                list_done.append(id_in_table) 
-        """
+
         for i in list_overdue:
             self.query.exec('''UPDATE comments_table SET performance = "Просрочено"
                                WHERE IthemID = '''+str(i))

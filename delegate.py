@@ -8,6 +8,7 @@ from PySide6.QtGui import QColor, QRegularExpressionValidator
 #------------- Делегат выбора даты --------------------------------------------------------
 
 class Date_delegate(QStyledItemDelegate):
+    """
     def __init__(self, parent):
         QStyledItemDelegate.__init__(self, parent)
 
@@ -17,6 +18,28 @@ class Date_delegate(QStyledItemDelegate):
         editor.setDate(d)
         editor.setCalendarPopup(True)
         return editor
+    """
+
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
+    def createEditor(self, parent, option, index):
+        dateTimeEdit = QDateEdit(parent)  # create new editor
+
+        # set properties of editor
+        dateTimeEdit.setDisplayFormat("dd.MM.yyyy")
+        dateTimeEdit.setCalendarPopup(True)
+
+        return dateTimeEdit
+
+    def setModelData(self, editor, model, index):
+        value = editor.dateTime().toString("dd.MM.yyyy")
+        model.setData(index, value)
+
+    def setEditorData(self, editor, index):
+        value = index.model().data(index, Qt.EditRole)
+        qdate = QDate().fromString(value, "dd.MM.yyyy")
+        editor.setDateTime(qdate)
 
 #------------- Делегат для таблицы в виде выпадающего списка-------------------------------
 
