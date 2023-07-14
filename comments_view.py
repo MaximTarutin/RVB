@@ -5,7 +5,7 @@ from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import date, datetime
-from delegate import ColorDelegate, NoEditorDelegate, Date_delegate
+from delegate import ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate
 import ui_commentsview
 
 class Comments_View(QMainWindow):
@@ -23,6 +23,8 @@ class Comments_View(QMainWindow):
         self.color_delegat = ColorDelegate(self)
         self.no_edit_delegat = NoEditorDelegate(self)
         self.date_delegat = Date_delegate(self)
+        self.worker_delegat = Worker_Name_delegate(self)
+
 
         self.model = QSqlTableModel(self)
         self.model.setTable("comments_table")
@@ -57,7 +59,9 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setItemDelegateForColumn(5, self.no_edit_delegat)
         self.ui.tableView.setItemDelegateForColumn(6, self.no_edit_delegat)
         self.ui.tableView.setItemDelegateForColumn(7, self.date_delegat)
+        self.ui.tableView.setItemDelegateForColumn(8, self.worker_delegat)
         self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)
+        self.ui.tableView.setItemDelegateForColumn(10, self.date_delegat)
 
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)

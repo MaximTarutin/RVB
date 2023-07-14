@@ -3,7 +3,30 @@
 
 from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit)
 from PySide6.QtCore import (Qt, QRegularExpression, QDate)
-from PySide6.QtGui import QColor, QRegularExpressionValidator
+from PySide6.QtGui import (QColor, QRegularExpressionValidator)
+from PySide6.QtSql import (QSqlQuery)
+
+#------------- Делегат со списком работников ---------------------------------------------
+
+class Worker_Name_delegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+        self.query = QSqlQuery()
+
+    def createEditor(self, parent, options, index):
+        editor = QComboBox(parent)
+        editor.addItem("")
+        self.query.exec("SELECT Name FROM workers")  # Заполняем комбобоксы из базы данных
+        list_worker = []
+        while self.query.next():
+            name = self.query.value("Name")
+            list_worker.append(name)
+        editor.clear()
+        editor.addItem("")
+        for i in list_worker:
+            editor.addItem(i)
+        del list_worker
+        return editor
 
 #------------- Делегат выбора даты --------------------------------------------------------
 
