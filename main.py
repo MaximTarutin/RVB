@@ -120,6 +120,10 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.planWindow.ui.action_user.triggered.connect(self.user_Mode)                # меню режим пользователя
         self.planWindow.ui.action_workers.triggered.connect(self.open_workerWindow)     # меню редактор сотрудников
         self.planWindow.ui.action_stations.triggered.connect(self.open_stationWindow)   # меню редактор станций
+        self.planWindow.ui.action_plan_edit.triggered.connect \
+            (self.planWindow.add_plan)                                                  # меню редактор планировщика
+        self.planWindow.ui.action_admin_edit.triggered.connect \
+            (self.edit_passwordWindow)                                                  # изменить пароль администратора
 
         # ************* события модуля comments_main.py ****************
 
@@ -135,6 +139,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsNew.ui.action_user.triggered.connect(self.user_Mode)               # перейти в режим пользователя
         self.commentsNew.ui.action_workers.triggered.connect(self.open_workerWindow)    # меню редактор сотрудников
         self.commentsNew.ui.action_stations.triggered.connect(self.open_stationWindow)  # меню редактор станций
+        self.commentsNew.ui.action_password.triggered.connect(self.edit_passwordWindow) # изменить пароль администратора
 
         #*************** события модуля comments_view.py **********************
 
@@ -142,6 +147,10 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsView.ui.return_pushButton.clicked.connect(self.closeCommentView)   # и редактирования замечаний
         self.commentsView.ui.action_User.triggered.connect(self.user_Mode)              # перейти в режим пользователя
         self.commentsView.ui.action_Admin.triggered.connect(self.open_passwordWindow)   # перейти в режим администратора
+        self.commentsView.ui.action_Worker.triggered.connect(self.open_workerWindow)    # меню редактор сотрудников
+        self.commentsView.ui.action_Station.triggered.connect(self.open_stationWindow)  # меню редактор станций
+        self.commentsView.ui.action_Password.triggered.connect \
+            (self.edit_passwordWindow)                                                  # изменить пароль администратора
 
 #-------------------------- Сигналы --------------------------------------------
 
@@ -212,6 +221,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.timeTrackingWindow.init_table()
         self.planWindow.init()
         self.commentsNew.initial()
+        self.commentsView.initial()
 
 # ------------- Показать окно редактора станций (worker.py) ------------------------------------------------
 
@@ -225,6 +235,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.stationWindow.close()
         self.planWindow.init()
         self.commentsNew.initial()
+        self.commentsView.initial()
 
 # ------------- Показать окно смены пароля (passwrd.py) -------------------------------------------------
 

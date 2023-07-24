@@ -16,8 +16,7 @@ class Comments_View(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
         self.ui.del_Button.setEnabled(False)
-        self.ui.ZaprosButton.deleteLater()
-
+        self.ui.day_dateEdit.setDate(QDate.currentDate())
         self.query = QSqlQuery()
 
         self.color_delegat = ColorDelegate(self)
@@ -79,17 +78,21 @@ class Comments_View(QMainWindow):
 
         self.initial()
 
-        self.ui.edit_checkBox.stateChanged.connect(self.check_checkBox)
-        self.ui.commis_Box.currentIndexChanged.connect(self.__data_filter)
-        self.ui.station_Box.currentIndexChanged.connect(self.__data_filter)
-        self.ui.auditor_Box.currentIndexChanged.connect(self.__data_filter)
-        self.ui.worker_Box.currentIndexChanged.connect(self.__data_filter)
-        self.ui.performance_Box.currentIndexChanged.connect(self.__data_filter)
-        self.model.dataChanged.connect(self.__proverka)
-
+        self.ui.edit_checkBox.stateChanged.connect(self.__check_checkBox)           # разрешено ли редактирование?
+        self.ui.edit_checkBox_data.stateChanged.connect(self.__check_checkBox)      # включен ли фильтр по дате?
+        self.ui.commis_Box.currentIndexChanged.connect(self.__data_filter)          # применяем фильтр по коммиссии
+        self.ui.station_Box.currentIndexChanged.connect(self.__data_filter)         # применяем фильтр по станции
+        self.ui.auditor_Box.currentIndexChanged.connect(self.__data_filter)         # применяем фильтр по проверяющему
+        self.ui.worker_Box.currentIndexChanged.connect(self.__data_filter)          # применяем фильтр по исполнителю
+        self.ui.performance_Box.currentIndexChanged.connect(self.__data_filter)     # применяем фильтр по выполнению
+        self.ui.day_dateEdit.dateChanged.connect(self.__data_filter)                # применяем фильтр по дате
+        self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
+                                                                                    # какая либо дата, то изменяем
+                                                                                    # формат из yyyy-MM-dd в dd.MM.yyyy
 #------------------------- Инициализация -------------------------------
 
     def initial(self):
+        self.ui.edit_checkBox_data.setEnabled(True)
         self.programm_Mode()
         self.query.exec("SELECT Name FROM workers")         # Заполняем комбобоксы из базы данных
         list_worker = []
@@ -137,6 +140,7 @@ class Comments_View(QMainWindow):
         del new_list_auditor
         del list_auditor
 
+        self.__check_checkBox()
         self.model.select()
         self.__data_filter()
         self.__compare_date()
@@ -150,10 +154,17 @@ class Comments_View(QMainWindow):
         auditor = self.ui.auditor_Box.currentText()
         worker = self.ui.worker_Box.currentText()
         performance = self.ui.performance_Box.currentText()
+        data = self.ui.day_dateEdit.date().toString("dd.MM.yyyy")
 
-        self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND 
-                                auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND 
-                                performance like "'''+performance+'''%"''')
+        if not self.ui.edit_checkBox_data.isChecked():
+            self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND
+                                    auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND
+                                    performance like "'''+performance+'''%"''')
+        else:
+            self.model.setFilter('''data like "%'''+data+'''%" AND kommis like "%''' + commis + '''%" AND 
+                                    station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
+                                    worker like "%''' + worker + '''%" AND
+                                    performance like "''' + performance + '''%"''')
 
 #------------------------------  изменение статуса выполнения -------------------------------------
 
@@ -238,9 +249,9 @@ class Comments_View(QMainWindow):
             self.ui.del_Button.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
-#----------------------- Проверка состояния чекбокса --------------------------------------
+#----------------------- Проверка состояния чекбоксов --------------------------------------
 
-    def check_checkBox(self):
+    def __check_checkBox(self):
         if self.ui.edit_checkBox.isChecked():
             self.ui.del_Button.setEnabled(True)
             self.ui.tableView.setEditTriggers(QAbstractItemView.AllEditTriggers)  # Разрешаем редактировать таблицу.
@@ -249,8 +260,15 @@ class Comments_View(QMainWindow):
         else:
             self.ui.del_Button.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)   # Запрет редактирования таблицы.
+        if self.ui.edit_checkBox_data.isChecked():
+            self.ui.day_dateEdit.setEnabled(True)
+            self.__data_filter()
+        else:
+            self.ui.day_dateEdit.setDisabled(True)
+            self.__data_filter()
 
-# ------------- Меняем формат даты в делегате -----------------------------------------------------------------------
+# ------------- Меняем формат даты из делегата (yyyy-MM-dd) в формат dd.MM.yyyy и произволим изменения -----------------
+# -------------------- в базе данных, также производим сравнение даты выполнения и текущей даты ------------------------
 
     def __format_date(self):
         temp = {}
@@ -264,6 +282,8 @@ class Comments_View(QMainWindow):
             new_t_d = QDate.fromString(t_d, "yyyy-MM-dd")
             new_t_d = new_t_d.toString("dd.MM.yyyy")
             new_o_d = QDate.fromString(o_d, "yyyy-MM-dd")
+            if new_o_d > QDate.currentDate():               # Дата выполнения не может быть больше текущей даты
+                new_o_d = QDate.currentDate()
             new_o_d = new_o_d.toString("dd.MM.yyyy")
             if len(new_t_d) > 0:
                 temp[t_it_id] = new_t_d
