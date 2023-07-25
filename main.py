@@ -228,7 +228,6 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 #----------------- Закрыть окно редактора сотрудников (worker.py) ----------------------------------------
 
     def close_workerWindow(self):
-        self.show()
         self.del_empty_string()
         self.workerWindow.close()
         self.timeTrackingWindow.compare_lists()
@@ -236,6 +235,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.planWindow.init()
         self.commentsNew.initial()
         self.commentsView.initial()
+        self.show()
 
 # ------------- Показать окно редактора станций (worker.py) ------------------------------------------------
 
@@ -246,12 +246,12 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 #--------------- Закрыть окно станций (worker.py) ------------------------------------------------------------
 
     def close_stationWindow(self):
-        self.show()
         self.del_empty_string()
         self.stationWindow.close()
         self.planWindow.init()
         self.commentsNew.initial()
         self.commentsView.initial()
+        self.show()
 
 # ------------- Показать окно смены пароля (passwrd.py) -------------------------------------------------
 

@@ -23,6 +23,8 @@ class WorkerWindow(QMainWindow):
         self.ui = ui_workerwindow.Ui_workerWindow()
         self.ui.setupUi(self)
 
+        self.setWindowFlag(Qt.FramelessWindowHint)              # скрываем рамку окна
+
         self.query = QSqlQuery()
         self.model = QSqlTableModel(self)  # Создаем модель и связываем таблицу
         self.model.setTable("workers")     # с моделью
@@ -97,10 +99,11 @@ class StationWindow(QMainWindow):
         super().__init__(parent)
         self.ui = ui_workerwindow.Ui_workerWindow()
         self.ui.setupUi(self)
+        self.setWindowFlag(Qt.FramelessWindowHint)                              # скрываем рамку окна
         self.ui.label.setText('Редактор станций и перегонов')
         self.setWindowTitle('Станции и перегоны')
         self.setWindowFlags(self.windowFlags() | Qt.CustomizeWindowHint)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно.
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)     # деактивируем кнопку закрыть окно.
 
         self.ui.button_add.setText("Добавить станцию")
         self.ui.button_del.setText("Удалить станцию")
