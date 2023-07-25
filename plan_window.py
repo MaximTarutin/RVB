@@ -27,10 +27,8 @@ class Plan_Window(QMainWindow):
 
         self.init()
 
-        self.ui.pushButton_return.clicked.connect(self.return_to_mainwindow)         # вернуться в главное окно
-        self.ui.action_return.triggered.connect(self.return_to_mainwindow)
         self.ui.checkBox.stateChanged.connect(self.__checkbox_state)                 # состояние checkbox
-        self.ui.pushButton_add.clicked.connect(self.add_plan)                      # Кнопка "Редактор"
+        self.ui.pushButton_add.clicked.connect(self.add_plan)                        # Кнопка "Редактор"
         self.PlanEditor.ui.pushButton_return.clicked.connect(self.close_planeditor)  # события при закрытии редактора
         self.ui.pushButton_delete.clicked.connect(self.__del_string)                 # удаляем выбранные строки
         self.ui.initial_dateEdit.dateChanged.connect(self.__data_filter)             # применяем фильтр к модели
@@ -80,12 +78,6 @@ class Plan_Window(QMainWindow):
             self.ui.label_initial.hide()
             self.ui.label_initial_2.hide()
         self.__data_filter()
-
-
-#------------------------------------------ Закрыть окно ---------------------------------------------------
-
-    def return_to_mainwindow(self):
-        self.close()
 
 #--------------------------обновляем таблицу при закрытии окна редактора ------------------------------------
 

@@ -12,7 +12,7 @@ class OtgulWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = ui_otgulwindow.Ui_OtgulWindow()
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.ui.setupUi(self)
 
         self.model = QSqlTableModel(self)

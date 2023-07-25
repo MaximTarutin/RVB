@@ -39,8 +39,6 @@ class Time_tracking(QMainWindow):
 
 #------------------------- Обработка сигналов ---------------------------------------------------------------
 
-        self.ui.pushButton_return.clicked.connect(self.return_of_window)        # Кнопка вернуться назад
-        self.ui.action_return.triggered.connect(self.return_of_window)          # Меню вернуться назад
         self.ui.spinBox_year.valueChanged.connect(self.init_table)              # Изменение года обновляем таблицу
         self.ui.comboBox_month.currentTextChanged.connect(self.init_table)      # Изменение месяца обновляем таблицу
         self.model.dataChanged.connect(self.calculation)                        # Расчет времени и сохранение
@@ -191,12 +189,6 @@ class Time_tracking(QMainWindow):
             self.msg.setWindowTitle("План")
             self.msg.setText(name1+"\n"+plantext)
             self.msg.exec()
-
-#--------------------------- Закрыть окно --------------------------------------------------------------------
-
-    def return_of_window(self):
-        self.calculation()
-        self.close()
 
 #------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 

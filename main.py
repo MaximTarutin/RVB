@@ -96,6 +96,10 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             (self.user_Mode)                                                            # меню режим пользователя
         self.timeTrackingWindow.ui.action_password.triggered. \
             connect(self.edit_passwordWindow)                                           # меню изменить пароль
+        self.timeTrackingWindow.ui.action_return.triggered. \
+            connect(self.close_time_tracking)                                           # меню вернуться
+        self.timeTrackingWindow.ui.pushButton_return.clicked. \
+            connect(self.close_time_tracking)                                           # Кнопка вернуться
 
         # ************* События модуля worker.py **************
 
@@ -124,6 +128,8 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             (self.planWindow.add_plan)                                                  # меню редактор планировщика
         self.planWindow.ui.action_admin_edit.triggered.connect \
             (self.edit_passwordWindow)                                                  # изменить пароль администратора
+        self.planWindow.ui.action_return.triggered.connect(self.close_planwindow)       # меню вернуться назад
+        self.planWindow.ui.pushButton_return.clicked.connect(self.close_planwindow)     # кнопка вернуться назад
 
         # ************* события модуля comments_main.py ****************
 
@@ -175,23 +181,27 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 #-------------- Показать модуль просмотра и редактирования замечаний (comments_view.py) -----------------------
 
     def openCommentView(self):
-        self.commentsView.initial()
         self.commentsView.showMaximized()
+        self.commentsMain.hide()
+        self.commentsView.initial()
 
 #-------------- Закрыть модуль просмотра и редактирования замечаний (comments_view.py) ------------------------
 
     def closeCommentView(self):
+        self.commentsMain.show()
         self.commentsView.close()
 
 #-------------- Показать модуль ввода новых замечаний (comments_new.py) ----------------------------------------
 
     def openCommentsNew(self):
-        self.commentsNew.initial()
         self.commentsNew.show()
+        self.commentsMain.hide()
+        self.commentsNew.initial()
 
 #--------------- Закрыть модуль ввода новых замечаний (comments_new.py) ----------------------------------------
 
     def closeCommentsNew(self):
+        self.commentsMain.show()
         self.commentsNew.close()
         self.commentsMain.statistic()           # подсчитываем количество неустраненных замечаний
 
@@ -200,10 +210,12 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def open_comments_main(self):
         self.commentsMain.statistic()
         self.commentsMain.show()
+        self.hide()
 
 #---------------- Закрыть главное окно модуля замечаний (comments_main.py) --------------------------------------
 
     def close_comments_main(self):
+        self.show()
         self.commentsMain.close()
 
 #------------- Показать окно редактора сотрудников (worker.py) --------------------------------------------
@@ -211,10 +223,12 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def open_workerWindow(self):
         self.workerWindow.init_table()
         self.workerWindow.show()
+        self.hide()
 
 #----------------- Закрыть окно редактора сотрудников (worker.py) ----------------------------------------
 
     def close_workerWindow(self):
+        self.show()
         self.del_empty_string()
         self.workerWindow.close()
         self.timeTrackingWindow.compare_lists()
@@ -227,10 +241,12 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     def open_stationWindow(self):
         self.stationWindow.show()
+        self.hide()
 
 #--------------- Закрыть окно станций (worker.py) ------------------------------------------------------------
 
     def close_stationWindow(self):
+        self.show()
         self.del_empty_string()
         self.stationWindow.close()
         self.planWindow.init()
@@ -259,12 +275,28 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def open_time_tracking(self):
         self.timeTrackingWindow.init_table()
         self.timeTrackingWindow.show()
+        self.hide()
+
+# ------------- Закрыть окно учета времени сотрудников (time_tracking.py) --------------------------------
+
+    def close_time_tracking(self):
+        self.timeTrackingWindow.calculation()
+        self.show()
+        self.timeTrackingWindow.hide()
 
 # ------------------ Показать окно планировщика работ (plan_window.py)----------------------------------------------
 
     def open_planwindow(self):
-        self.planWindow.init()
         self.planWindow.show()
+        self.hide()
+        self.planWindow.init()
+
+#-------------------- Закрыть окно планировщика работ (plan_window.py) ---------------------------------------------
+
+    def close_planwindow(self):
+        self.show()
+        self.planWindow.hide()
+
 
 #----------- Удаление пустых строк в таблице сотрудников и станций при закрытии окон редакторов --------------
 
