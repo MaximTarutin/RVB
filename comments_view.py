@@ -1,11 +1,14 @@
 """ ---------- Модуль просмотра замечаний --------------"""
 
+# ДОРАБАТЫВАЕМ ДЕЛЕГАТ КНОПКИ
+
+
 import sys
 from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
-from datetime import date, datetime
-from delegate import ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate
+from datetime import (date, datetime)
+from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate)
 import ui_commentsview
 
 class Comments_View(QMainWindow):
@@ -23,6 +26,7 @@ class Comments_View(QMainWindow):
         self.no_edit_delegat = NoEditorDelegate(self)
         self.date_delegat = Date_delegate(self)
         self.worker_delegat = Worker_Name_delegate(self)
+        self.button_delegat = Button_delegate(self)
 
 
         self.model = QSqlTableModel(self)
@@ -51,16 +55,18 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("Просрочено")
 
         self.ui.tableView.setColumnHidden(0, True)
-        self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat)  # запрещаем редактирование некоторых столбцов
-        self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat)
+        self.ui.tableView.setColumnHidden(13, True)
+        self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
+        self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
         self.ui.tableView.setItemDelegateForColumn(4, self.no_edit_delegat)
         self.ui.tableView.setItemDelegateForColumn(5, self.no_edit_delegat)
         self.ui.tableView.setItemDelegateForColumn(6, self.no_edit_delegat)
-        self.ui.tableView.setItemDelegateForColumn(7, self.date_delegat)
-        self.ui.tableView.setItemDelegateForColumn(8, self.worker_delegat)
-        self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)
-        self.ui.tableView.setItemDelegateForColumn(10, self.date_delegat)
+        self.ui.tableView.setItemDelegateForColumn(7, self.date_delegat)    # Установка даты в ячейке
+        self.ui.tableView.setItemDelegateForColumn(8, self.worker_delegat)  # выпадающий список
+        self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)   # Цвет ячейки в зависимости от выполнения
+        self.ui.tableView.setItemDelegateForColumn(10, self.date_delegat)   # Установка даты в ячейке
+        self.ui.tableView.setItemDelegateForColumn(12, self.button_delegat)
 
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)
@@ -74,7 +80,6 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setColumnWidth(10, 100)
         self.ui.tableView.setColumnWidth(11, 400)
         self.ui.tableView.setColumnWidth(12, 20)
-        self.ui.tableView.resizeRowsToContents()  # Содержимое вписывается в ячейку
 
         self.initial()
 
@@ -89,11 +94,13 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
+        self.model.dataChanged.connect(self.initial)
 #------------------------- Инициализация -------------------------------
 
     def initial(self):
         self.ui.edit_checkBox_data.setEnabled(True)
         self.programm_Mode()
+
         self.query.exec("SELECT Name FROM workers")         # Заполняем комбобоксы из базы данных
         list_worker = []
         while self.query.next():
@@ -144,6 +151,7 @@ class Comments_View(QMainWindow):
         self.model.select()
         self.__data_filter()
         self.__compare_date()
+        self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
 
 
 #------------------------- отображаем данные в таблице по заданному фильтру ----------------------------------------
@@ -305,6 +313,7 @@ class Comments_View(QMainWindow):
         self.__compare_date()
         self.model.submitAll()
         self.model.select()
+        self.initial()
 
 #--------------------------------------------------------------------------------------------------------------------
 

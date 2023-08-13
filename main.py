@@ -204,6 +204,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsMain.show()
         self.commentsNew.close()
         self.commentsMain.statistic()           # подсчитываем количество неустраненных замечаний
+        self.commentsView.initial()
 
 # ------------- Показать главное окно модуля замечаний (comments_main.py) ----------------------------------------
 
@@ -369,7 +370,8 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                                                             auditor     TEXT,    comment     TEXT,    
                                                             term_data   TEXT,    worker      TEXT,    
                                                             performance TEXT,    old_data    TEXT,    
-                                                            what_is     TEXT,    foto        BLOB)''')
+                                                            what_is     TEXT,    foto        TEXT,
+                                                            foto_data   BLOB)''')
 
         self.query.exec('SELECT Password FROM password_table')
         count = 0

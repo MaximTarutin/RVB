@@ -31,6 +31,7 @@ class Comments_main(QWidget):
         self.query.exec('''SELECT kommis, performance FROM comments_table WHERE performance = "Не выполнено" OR
                            performance = "Подходит срок" OR performance = "Просрочено" OR 
                            performance = "Выполнить сегодня"''')
+        self.query.first()
         while self.query.next():
             commission = self.query.value("kommis")
             count+=1

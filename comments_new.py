@@ -103,7 +103,7 @@ class New_Comments_Window(QMainWindow):
             data = self.ui.date_dateEdit.text()
             performance = "Не выполнено"
             what_is = ""
-            foto = ""
+            foto = "нет"
             olddata = ""
             self.query.exec('''INSERT INTO comments_table (number, data, kommis, station, auditor, comment,
                                                            term_data, worker, performance, old_data, what_is, foto)

@@ -1,10 +1,58 @@
 """ ------ Делегаты для QTableView ------
 """
 
-from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit)
+from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit, QPushButton)
 from PySide6.QtCore import (Qt, QRegularExpression, QDate)
 from PySide6.QtGui import (QColor, QRegularExpressionValidator)
 from PySide6.QtSql import (QSqlQuery)
+
+#------------------------ Делегат Button для вставки/просмотра фото в comments_view.py -------------------------------
+
+class Button_delegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+        self.query = QSqlQuery()
+
+    def createEditor(self, parent, options, index):
+        editor = QPushButton(parent)
+        editor.setStyleSheet("background-color: blue;")
+        return editor
+
+    def setEditorData(self, editor, index):                        # Получаем данные из модели
+        self.row = index.row()+1
+        self.query.exec("SELECT foto_data FROM comments_table WHERE IthemID = "+str(self.row))
+        self.query.next()
+        data = self.query.value('foto_data')
+        if len(data)!=0 or data.isspace():
+            self.data = 'да'
+        else:
+            self.data = 'нет'
+        self.__check_data()
+
+    def setModelData(self, editor, model, index):                   # Устанавливаем данные в модель
+        value = self.data
+        model.setData(index, value, Qt.EditRole)
+
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        text = option.text
+        option.displayAlignment = Qt.AlignCenter
+        color = "#e6e6e6"
+        if text=='нет':
+            color = "pink"
+        if text=='да':
+            color = "lightgreen"
+        option.backgroundBrush = QColor(color)
+
+    def __check_data(self):
+        if self.data == 'нет':
+            print('No')
+            self.query.exec("UPDATE comments_table SET foto='да' WHERE IthemID = "+str(self.row))
+            self.query.exec("UPDATE comments_table SET foto_data='999' WHERE IthemID = " + str(self.row))
+        if self.data == 'да':
+            print('Yes')
+
+
 
 #------------- Делегат со списком работников ---------------------------------------------
 
