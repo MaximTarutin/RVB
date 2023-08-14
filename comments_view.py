@@ -5,7 +5,7 @@
 
 import sys
 from PySide6.QtCore import (Qt, QDate)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QFileDialog)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
 from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate)
@@ -94,7 +94,27 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        self.model.dataChanged.connect(self.initial)
+        self.button_delegat.closeEditor.connect(self.ins)
+        self.button_delegat.button_signal.connect(self.ins)
+
+    def ins(self, b):
+        print(b)
+        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = "+str(b))
+        self.query.next()
+        foto = self.query.value("foto")
+        print(foto)
+        if foto == 'нет':
+            arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="*")
+            self.query.exec("UPDATE comments_table SET foto = 'да' WHERE IthemID = "+str(b))
+            self.query.exec("UPDATE comments_table SET foto_data='999' WHERE IthemID = " + str(b))
+            print(arr)
+        else:
+            self.query.exec("UPDATE comments_table SET foto = 'нет' WHERE IthemID = " + str(b))
+            self.query.exec("UPDATE comments_table SET foto_data='' WHERE IthemID = " + str(b))
+        self.model.select()
+        self.initial()
+
+
 #------------------------- Инициализация -------------------------------
 
     def initial(self):

@@ -105,11 +105,12 @@ class New_Comments_Window(QMainWindow):
             what_is = ""
             foto = "нет"
             olddata = ""
+            fotodata = ""
             self.query.exec('''INSERT INTO comments_table (number, data, kommis, station, auditor, comment,
-                                                           term_data, worker, performance, old_data, what_is, foto)
+                                                           term_data, worker, performance, old_data, what_is, foto, foto_data)
                                 VALUES ("'''+number+'''","'''+data+'''","'''+kommis+'''","'''+station+'''",
                                         "'''+auditor+'''","'''+comments+'''","'''+termdata+'''","'''+worker+'''",
-                                        "'''+performance+'''","'''+olddata+'''","'''+what_is+'''","'''+foto+'''")''')
+                                        "'''+performance+'''","'''+olddata+'''","'''+what_is+'''","'''+foto+'''","'''+fotodata+'''")''')
             self.ui.act_lineEdit.clear()
             self.ui.Stations_Box.setCurrentIndex(0)
             self.ui.Komiss_Box.setCurrentIndex(0)
