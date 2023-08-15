@@ -55,7 +55,7 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("Просрочено")
 
         self.ui.tableView.setColumnHidden(0, True)
-        self.ui.tableView.setColumnHidden(13, True)
+        #self.ui.tableView.setColumnHidden(13, True)
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
@@ -94,25 +94,49 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        self.button_delegat.closeEditor.connect(self.ins)
-        self.button_delegat.button_signal.connect(self.ins)
+        self.button_delegat.closeEditor.connect(self.__check_foto)                  # проверяем имеется ли фото в базе
+        self.button_delegat.button_signal.connect(self.__check_foto)
 
-    def ins(self, b):
-        print(b)
+#----------------------- Проверяем наличие фото в базе данных ---------------------------------------------------------
+
+    def __check_foto(self, b):
         self.query.exec("SELECT foto FROM comments_table WHERE IthemID = "+str(b))
         self.query.next()
         foto = self.query.value("foto")
         print(foto)
         if foto == 'нет':
-            arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="*")
-            self.query.exec("UPDATE comments_table SET foto = 'да' WHERE IthemID = "+str(b))
-            self.query.exec("UPDATE comments_table SET foto_data='999' WHERE IthemID = " + str(b))
-            print(arr)
+            self.__add_foto(b)
+            #self.query.exec("UPDATE comments_table SET foto = 'да' WHERE IthemID = "+str(b))
+            #self.query.exec("UPDATE comments_table SET foto_data='999' WHERE IthemID = " + str(b))
         else:
+            self.__view_foto()
             self.query.exec("UPDATE comments_table SET foto = 'нет' WHERE IthemID = " + str(b))
             self.query.exec("UPDATE comments_table SET foto_data='' WHERE IthemID = " + str(b))
         self.model.select()
         self.initial()
+
+#-------------------------------- Добавляем фото в базу данных --------------------------------------------------------
+
+    def __add_foto(self, b):
+        file_name = QFileDialog().getOpenFileName(self, "Загрузить фото", "Файлы изображений (*.png *.jpg *.bmp)")
+        print(file_name[0])
+        with open(file_name[0], 'rb') as file:              # Преобразование данных в двоичный формат
+            blob_data = file.read()
+        print(blob_data)
+        #self.query.exec("INSERT INTO comments_table (foto_data) VALUES ("+blob_data+")")
+        self.query.exec("UPDATE comments_table SET foto = 'да' WHERE IthemID = " + str(b))
+        #self.query.exec("UPDATE comments_table SET foto_data="+blob_data+" WHERE IthemID = "+str(b))
+
+        self.query.prepare("INSERT INTO comments_table (foto_data) VALUES (:foto_data)")
+        self.query.bindValue(":foto_data", '1111')
+        self.query.exec()
+
+        self.model.select()
+
+#-------------------------------- Просмотр, удаление и сохранение фото из базы данных ---------------------------------
+
+    def __view_foto(self):
+        pass
 
 
 #------------------------- Инициализация -------------------------------
@@ -174,7 +198,7 @@ class Comments_View(QMainWindow):
         self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
 
 
-#------------------------- отображаем данные в таблице по заданному фильтру ----------------------------------------
+# ------------------------- отображаем данные в таблице по заданному фильтру ----------------------------------------
 
     def __data_filter(self):
         commis = self.ui.commis_Box.currentText()
