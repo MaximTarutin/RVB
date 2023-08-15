@@ -17,15 +17,15 @@ class Button_delegate(QStyledItemDelegate):
     def createEditor(self, parent, options, index):
         editor = QPushButton(parent)
         editor.setStyleSheet("background-color: blue;")
+        editor.clicked.connect(self.clicked_button)
         return editor
 
     def setEditorData(self, editor, index):                        # Получаем данные из модели
         self.row = index.row()+1
-        self.button_signal[int].emit(self.row)
+        #self.button_signal[int].emit(self.row)
 
-    def setModelData(self, editor, model, index):                   # Устанавливаем данные в модель
-        value = self.data
-        model.setData(index, value, Qt.EditRole)
+    def clicked_button(self):
+        self.button_signal[int].emit(self.row)
 
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)

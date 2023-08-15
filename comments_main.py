@@ -15,7 +15,7 @@ class Comments_main(QWidget):
         self.statistic()
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
 
-# ---------------------- Выводим статистику по количеству неустраненных замечаний -------------------------------------
+#---------------------- Выводим статистику по количеству неустраненных замечаний -------------------------------------
 
     def statistic(self):
         count = 0               # Общее количество неустраненных замечаний
@@ -35,14 +35,14 @@ class Comments_main(QWidget):
         while self.query.next():
             commission = self.query.value("kommis")
             count+=1
-            if commission == "Начальник дороги": head_railway += 1
-            if commission == "Зам. по региону": deputy_head += 1
-            if commission == "Ревизорский аппарат": auditors += 1
-            if commission == "Дни безопасности": safetyday += 1
-            if commission == "Общественный инспектор": inspektor += 1
-            if commission == "Охрана труда": ksot += 1
-            if commission == "Старший электромеханик": foreman += 1
-            if commission == "Другое": other += 1
+            if commission == "Начальник дороги": head_railway+=1
+            if commission == "Зам. по региону": deputy_head+=1
+            if commission == "Ревизорский аппарат": auditors+=1
+            if commission == "Дни безопасности": safetyday+=1
+            if commission == "Общественный инспектор": inspektor+=1
+            if commission == "Охрана труда": ksot+=1
+            if commission == "Старший электромеханик": foreman+=1
+            if commission == "Другое": other+=1
         self.ui.boss_label.setText(str(head_railway))
         self.ui.deputy_label.setText(str(deputy_head))
         self.ui.auditor_label.setText(str(auditors))
@@ -53,7 +53,7 @@ class Comments_main(QWidget):
         self.ui.other_2.setText(str(other))
         self.ui.total_label.setText(str(count))
 
-# ---------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
