@@ -35,14 +35,14 @@ class Comments_main(QWidget):
         while self.query.next():
             commission = self.query.value("kommis")
             count+=1
-            if commission == "Начальник дороги": head_railway+=1
-            if commission == "Зам. по региону": deputy_head+=1
-            if commission == "Ревизорский аппарат": auditors+=1
-            if commission == "Дни безопасности": safetyday+=1
-            if commission == "Общественный инспектор": inspektor+=1
-            if commission == "Охрана труда": ksot+=1
-            if commission == "Старший электромеханик": foreman+=1
-            if commission == "Другое": other+=1
+            if commission == "Начальник дороги": head_railway += 1
+            if commission == "Зам. по региону": deputy_head += 1
+            if commission == "Ревизорский аппарат": auditors += 1
+            if commission == "Дни безопасности": safetyday += 1
+            if commission == "Общественный инспектор": inspektor += 1
+            if commission == "Охрана труда": ksot += 1
+            if commission == "Старший электромеханик": foreman += 1
+            if commission == "Другое": other += 1
         self.ui.boss_label.setText(str(head_railway))
         self.ui.deputy_label.setText(str(deputy_head))
         self.ui.auditor_label.setText(str(auditors))
