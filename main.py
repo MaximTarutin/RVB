@@ -371,7 +371,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                                                             term_data   TEXT,    worker      TEXT,    
                                                             performance TEXT,    old_data    TEXT,    
                                                             what_is     TEXT,    foto        TEXT,
-                                                            foto_data   BLOB)''')
+                                                            foto_but    TEXT,    foto_data   BLOB)''')
 
         self.query.exec('SELECT Password FROM password_table')
         count = 0

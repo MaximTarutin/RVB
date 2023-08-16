@@ -1,7 +1,8 @@
 """ ------ Делегаты для QTableView ------
 """
 
-from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit, QPushButton)
+from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit, QPushButton,
+                               QStyle, QStyleOptionButton, QApplication)
 from PySide6.QtCore import (Qt, QRegularExpression, QDate, Signal)
 from PySide6.QtGui import (QColor, QRegularExpressionValidator)
 from PySide6.QtSql import (QSqlQuery)
@@ -16,16 +17,31 @@ class Button_delegate(QStyledItemDelegate):
 
     def createEditor(self, parent, options, index):
         editor = QPushButton(parent)
-        editor.setStyleSheet("background-color: blue;")
         editor.clicked.connect(self.clicked_button)
         return editor
 
+    def paint(self, painter, option, index):
+        value = index.data(Qt.EditRole)
+        opt = QStyleOptionButton()
+        opt.state = QStyle.State_Enabled
+        opt.state  = QStyle.State_On if value else QStyle.State_On
+        QApplication.style().drawControl(QStyle.CE_PushButton, opt, painter)
+
     def setEditorData(self, editor, index):                        # Получаем данные из модели
         self.row = index.row()+1
-        #self.button_signal[int].emit(self.row)
 
     def clicked_button(self):
         self.button_signal[int].emit(self.row)
+
+
+# --------------------- Цвет ячейки наличия фото ---------------------------------------------
+
+class Foto_Color_Delegate(QStyledItemDelegate):
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
+
+    def createEditor(self, parent, option, index):
+        return
 
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)

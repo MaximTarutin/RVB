@@ -5,14 +5,24 @@
 
 import sys
 from PySide6.QtCore import (Qt, QDate, QByteArray)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QFileDialog)
+from PySide6.QtGui import (QPixmap)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QFileDialog, QLabel, QWidget)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
-from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate)
+from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
+                      Foto_Color_Delegate)
 import ui_commentsview
+
+class Lbl(QLabel):
+    def __init__(self, parrent=None):
+        super().__init__(parrent)
+    def init(self):
+        self.resize(600,600)
+        self.show()
 
 class Comments_View(QMainWindow):
     def __init__(self, parrent = None):
+        self.signal_value = None
         self.FLAG_ADMIN = False
         super().__init__(parrent)
         self.ui = ui_commentsview.Ui_CommentsView()
@@ -27,6 +37,7 @@ class Comments_View(QMainWindow):
         self.date_delegat = Date_delegate(self)
         self.worker_delegat = Worker_Name_delegate(self)
         self.button_delegat = Button_delegate(self)
+        self.foto_color_delegat = Foto_Color_Delegate(self)
 
 
         self.model = QSqlTableModel(self)
@@ -43,6 +54,7 @@ class Comments_View(QMainWindow):
         self.model.setHeaderData(10, Qt.Horizontal, "Дата")
         self.model.setHeaderData(11, Qt.Horizontal, "Отметка о выполнении")
         self.model.setHeaderData(12, Qt.Horizontal, "Фото")
+        self.model.setHeaderData(13, Qt.Horizontal,"*")
 
         self.ui.tableView.setModel(self.model)
 
@@ -55,7 +67,7 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("Просрочено")
 
         self.ui.tableView.setColumnHidden(0, True)
-        self.ui.tableView.setColumnHidden(13, True)
+        self.ui.tableView.setColumnHidden(14, True)
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
@@ -66,7 +78,8 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setItemDelegateForColumn(8, self.worker_delegat)  # выпадающий список
         self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)   # Цвет ячейки в зависимости от выполнения
         self.ui.tableView.setItemDelegateForColumn(10, self.date_delegat)   # Установка даты в ячейке
-        self.ui.tableView.setItemDelegateForColumn(12, self.button_delegat)
+        self.ui.tableView.setItemDelegateForColumn(12, self.foto_color_delegat)
+        self.ui.tableView.setItemDelegateForColumn(13, self.button_delegat)
 
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)
@@ -80,6 +93,7 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setColumnWidth(10, 100)
         self.ui.tableView.setColumnWidth(11, 400)
         self.ui.tableView.setColumnWidth(12, 20)
+        self.ui.tableView.setColumnWidth(13, 20)
 
         self.initial()
 
@@ -94,41 +108,9 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        #self.button_delegat.closeEditor.connect(self.ins)
         self.button_delegat.button_signal.connect(self.sig_delegate)
 
-    def sig_delegate(self,b):                       # Получаем номер строки в которой нажат делегат кнопка
-        print(b)
-        self.signal_value = b
-        self.ins()
-
-    def ins(self):
-        print(self.signal_value)
-        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = "+str(self.signal_value))
-        self.query.next()
-        foto = self.query.value("foto")
-        print(foto)
-        if foto == 'нет':
-            arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="Картинки(*.jpg)")
-            fob = open(arr[0], 'rb')
-            blob_d = fob.read()
-            blob_d=QByteArray(blob_d)
-            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data 
-                                  WHERE IthemID='''+str(self.signal_value))
-            self.query.bindValue(":foto", "да")
-            self.query.bindValue(":foto_data", blob_d)
-            self.query.exec_()
-        else:
-            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data 
-                                  WHERE IthemID='''+str(self.signal_value))
-            self.query.bindValue(":foto", "нет")
-            self.query.bindValue(":foto_data", "")
-            self.query.exec_()
-        self.model.select()
-        self.initial()
-
-
-#------------------------- Инициализация -------------------------------
+# ------------------------- Инициализация -------------------------------
 
     def initial(self):
         self.ui.edit_checkBox_data.setEnabled(True)
@@ -187,7 +169,7 @@ class Comments_View(QMainWindow):
         self.ui.tableView.resizeRowsToContents()                        # Содержимое вписывается в ячейку
 
 
-#------------------------- отображаем данные в таблице по заданному фильтру ----------------------------------------
+# ------------------------- отображаем данные в таблице по заданному фильтру ----------------------------------------
 
     def __data_filter(self):
         commis = self.ui.commis_Box.currentText()
@@ -207,7 +189,7 @@ class Comments_View(QMainWindow):
                                     worker like "%''' + worker + '''%" AND
                                     performance like "''' + performance + '''%"''')
 
-#------------------------------  изменение статуса выполнения -------------------------------------
+# ------------------------------  изменение статуса выполнения -------------------------------------
 
     def __compare_date(self):
         list_overdue = []                                       # список просроченных замечаний
@@ -269,7 +251,7 @@ class Comments_View(QMainWindow):
         self.FLAG_ADMIN = b
         self.programm_Mode()
 
-#------------------------- Переключение режима работы программы (админ или пользователь) -----------------------------
+# ------------------------- Переключение режима работы программы (админ или пользователь) -----------------------------
 
     def programm_Mode(self):
         if self.FLAG_ADMIN:
@@ -290,7 +272,7 @@ class Comments_View(QMainWindow):
             self.ui.del_Button.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
-#----------------------- Проверка состояния чекбоксов --------------------------------------
+# ----------------------- Проверка состояния чекбоксов --------------------------------------
 
     def __check_checkBox(self):
         if self.ui.edit_checkBox.isChecked():
@@ -308,7 +290,7 @@ class Comments_View(QMainWindow):
             self.ui.day_dateEdit.setDisabled(True)
             self.__data_filter()
 
-# ------------- Меняем формат даты из делегата (yyyy-MM-dd) в формат dd.MM.yyyy и произволим изменения -----------------
+# ------------- Меняем формат даты из делегата (yyyy-MM-dd) в формат dd.MM.yyyy и производим изменения -----------------
 # -------------------- в базе данных, также производим сравнение даты выполнения и текущей даты ------------------------
 
     def __format_date(self):
@@ -339,7 +321,7 @@ class Comments_View(QMainWindow):
         temp.clear()
         temp1.clear()
 
-#----------- Проверка статуса замечаний (выполнено, невыполнено, просрочено и т.д. --------------------------------
+# ----------- Проверка статуса замечаний (выполнено, не выполнено, просрочено и т.д. --------------------------------
 
     def __proverka(self):
         self.__format_date()
@@ -347,6 +329,67 @@ class Comments_View(QMainWindow):
         self.model.submitAll()
         self.model.select()
         self.initial()
+
+# ------------------- Получаем номер строки в которой нажат делегат кнопка ----------------------------------
+
+    def sig_delegate(self, b):
+        self.signal_value = b
+        self.check_button()
+
+#  ------------------------- проверяем есть ли фото в базе данных ----------------------------------------
+
+    def check_button(self):
+        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.signal_value))
+        self.query.next()
+        foto = self.query.value("foto")
+        if foto == 'нет':
+            self.__add_foto()
+        elif foto == 'да':
+            self.__view_foto()
+        self.model.select()
+        self.initial()
+
+# ------------------------------------- Добавляем фото в базу -----------------------------------------
+
+    def __add_foto(self):
+        arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="Фото (*.jpg)")
+        if len(arr) != 0 or arr.isspace():
+            fob = open(arr[0], 'rb')
+            blob_d = fob.read()
+            blob_d = QByteArray(blob_d)
+            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data 
+                                  WHERE IthemID=''' + str(self.signal_value))
+            self.query.bindValue(":foto", "да")
+            self.query.bindValue(":foto_data", blob_d)
+            self.query.exec_()
+        else: return
+
+# ------------------------------------ Просматриваем фото (удаляем, сохраняем) --------------------------
+
+    def __view_foto(self):
+        self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(self.signal_value))
+        while self.query.next():
+            foo = self.query.value("foto_data")
+
+        with open('filename.jpg', 'wb') as f:
+            f.write(bytes(foo))
+
+        self.lbl = Lbl()
+        self.lbl.init()
+        self.lbl.setWindowModality(Qt.ApplicationModal)
+        #pix = QPixmap('filename.jpg')
+        pix = QPixmap()
+        pix.loadFromData(foo)
+        self.lbl.setPixmap(pix)
+        self.lbl.setScaledContents(bool)
+        print(bytes(foo))
+
+        #self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
+        #                                  WHERE IthemID=''' + str(self.signal_value))
+        #self.query.bindValue(":foto", "нет")
+        #self.query.bindValue(":foto_data", "")
+        #self.query.exec_()
+
 
 #--------------------------------------------------------------------------------------------------------------------
 
