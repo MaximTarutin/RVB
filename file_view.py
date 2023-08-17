@@ -38,7 +38,6 @@ class File_View(QWidget):
             foo = self.query.value("foto_data")
         pix = QPixmap()
         pix.loadFromData(foo)
-        self.ui.label_foto.setPixmap(pix)
         self.ui.label_foto.setPixmap(pix.scaled(800, 600, Qt.KeepAspectRatio))
         self.show()
 
@@ -51,7 +50,6 @@ class File_View(QWidget):
         dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         dlg.setIcon(QMessageBox.Question)
         button = dlg.exec()
-
         if button == QMessageBox.Yes:
             self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
                                                   WHERE IthemID=''' + str(row))
@@ -82,7 +80,7 @@ class File_View(QWidget):
     def close_file_view(self):
         self.close()
 
-
+# ----------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -10,6 +10,7 @@ from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
 from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
                       Foto_Color_Delegate)
+import xlsxwriter
 import ui_commentsview
 from file_view import File_View
 
@@ -113,6 +114,7 @@ class Comments_View(QMainWindow):
         self.fileview.ui.pushButton_del.clicked.connect(self.__del_file)            # удаляем фото из базы данных
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
         self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
+        self.ui.excel_Button.clicked.connect(self.data_to_excel)
 
 # ------------------------- Инициализация -------------------------------
 
@@ -274,7 +276,6 @@ class Comments_View(QMainWindow):
             self.ui.edit_checkBox.setEnabled(False)
             self.ui.edit_checkBox.setChecked(False)
             self.ui.del_Button.setEnabled(False)
-            self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Запрет редактирования таблицы.
 
 # ----------------------- Проверка состояния чекбоксов --------------------------------------
 
@@ -382,6 +383,20 @@ class Comments_View(QMainWindow):
         self.fileview.close_file_view()
         self.model.select()
 
+# ------------------------------------ Запись в Excel ------------------------------------------------
+
+    def data_to_excel(self):
+        workbook = xlsxwriter.Workbook('hello.xlsx')
+        worksheet = workbook.add_worksheet()
+        worksheet.set_landscape()
+        merge_format = workbook.add_format({
+            'bold': True,
+            'border': 6,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+        worksheet.merge_range('A1:O2', 'ОТЧЕТ \n по замечаниям выявленым в ходе проверки _____ ', merge_format)
+        workbook.close()
 
 #--------------------------------------------------------------------------------------------------------------------
 
