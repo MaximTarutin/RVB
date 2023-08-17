@@ -12,6 +12,7 @@ from datetime import (date, datetime)
 from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
                       Foto_Color_Delegate)
 import ui_commentsview
+from file_view import File_View
 
 class Lbl(QLabel):
     def __init__(self, parrent=None):
@@ -38,6 +39,7 @@ class Comments_View(QMainWindow):
         self.worker_delegat = Worker_Name_delegate(self)
         self.button_delegat = Button_delegate(self)
         self.foto_color_delegat = Foto_Color_Delegate(self)
+        self.fileview = File_View(self)
 
 
         self.model = QSqlTableModel(self)
@@ -352,37 +354,28 @@ class Comments_View(QMainWindow):
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
 
     def __add_foto(self):
-        arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="Фото (*.jpg)")
-        if len(arr) != 0 or arr.isspace():
-            fob = open(arr[0], 'rb')
-            blob_d = fob.read()
-            blob_d = QByteArray(blob_d)
-            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data 
-                                  WHERE IthemID=''' + str(self.signal_value))
-            self.query.bindValue(":foto", "да")
-            self.query.bindValue(":foto_data", blob_d)
-            self.query.exec_()
-        else: return
+        self.fileview.load_file_to_db(self.signal_value)
 
 # ------------------------------------ Просматриваем фото (удаляем, сохраняем) --------------------------
 
     def __view_foto(self):
-        self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(self.signal_value))
-        while self.query.next():
-            foo = self.query.value("foto_data")
+        self.fileview.open_file_from_db(self.signal_value)
 
-        with open('filename.jpg', 'wb') as f:
-            f.write(bytes(foo))
+        #self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(self.signal_value))
+        #while self.query.next():
+        #    foo = self.query.value("foto_data")
 
-        self.lbl = Lbl()
-        self.lbl.init()
-        self.lbl.setWindowModality(Qt.ApplicationModal)
-        #pix = QPixmap('filename.jpg')
-        pix = QPixmap()
-        pix.loadFromData(foo)
-        self.lbl.setPixmap(pix)
-        self.lbl.setScaledContents(bool)
-        print(bytes(foo))
+        #with open('filename.jpg', 'wb') as f:
+        #    f.write(bytes(foo))
+
+        #self.lbl = Lbl(self)
+        #self.lbl.init()
+        #self.lbl.setWindowModality(Qt.ApplicationModal)
+        #pix = QPixmap()
+        #pix.loadFromData(foo)
+        #self.lbl.setPixmap(pix)
+        #self.lbl.setScaledContents(bool)
+        #print(bytes(foo))
 
         #self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
         #                                  WHERE IthemID=''' + str(self.signal_value))
