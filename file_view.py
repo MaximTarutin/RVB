@@ -64,15 +64,16 @@ class File_View(QWidget):
     def save_file(self, row):
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Внимание !!!")
-        dlg.setText("Сохранить фото в базу данных?")
+        dlg.setText("Сохранить фото на компьютер?")
         dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         dlg.setIcon(QMessageBox.Question)
         button = dlg.exec()
         if button == QMessageBox.Yes:
+            arr = QFileDialog().getSaveFileName(self, caption="Сохранить фото", filter="Фото (*.jpg)")
             self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(row))
             while self.query.next():
                 foo = self.query.value("foto_data")
-            with open('filename.jpg', 'wb') as f:
+            with open(arr[0], 'wb') as f:
                 f.write(bytes(foo))
 
 
