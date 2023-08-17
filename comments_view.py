@@ -4,9 +4,8 @@
 
 
 import sys
-from PySide6.QtCore import (Qt, QDate, QByteArray)
-from PySide6.QtGui import (QPixmap)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QFileDialog, QLabel, QWidget)
+from PySide6.QtCore import (Qt, QDate)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QLabel)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
 from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
@@ -39,7 +38,7 @@ class Comments_View(QMainWindow):
         self.worker_delegat = Worker_Name_delegate(self)
         self.button_delegat = Button_delegate(self)
         self.foto_color_delegat = Foto_Color_Delegate(self)
-        self.fileview = File_View(self)
+        self.fileview = File_View()
 
 
         self.model = QSqlTableModel(self)
@@ -110,7 +109,10 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        self.button_delegat.button_signal.connect(self.sig_delegate)
+        self.button_delegat.button_signal.connect(self.sig_delegate)                # принимаем номер строки из делегата
+        self.fileview.ui.pushButton_del.clicked.connect(self.__del_file)            # удаляем фото из базы данных
+        self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
+        self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
 
 # ------------------------- Инициализация -------------------------------
 
@@ -323,7 +325,7 @@ class Comments_View(QMainWindow):
         temp.clear()
         temp1.clear()
 
-# ----------- Проверка статуса замечаний (выполнено, не выполнено, просрочено и т.д. --------------------------------
+# ----------- Проверка статуса замечаний (выполнено, не выполнено, просрочено и т.д.) --------------------------------
 
     def __proverka(self):
         self.__format_date()
@@ -354,34 +356,31 @@ class Comments_View(QMainWindow):
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
 
     def __add_foto(self):
+        self.fileview.setParent(self)
         self.fileview.load_file_to_db(self.signal_value)
 
-# ------------------------------------ Просматриваем фото (удаляем, сохраняем) --------------------------
+# ------------------------------------ Просматриваем фото --------------------------------------------
 
     def __view_foto(self):
+        self.fileview.setParent(None)
         self.fileview.open_file_from_db(self.signal_value)
 
-        #self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(self.signal_value))
-        #while self.query.next():
-        #    foo = self.query.value("foto_data")
+# ----------------------------------- Удаляем фото ---------------------------------------------------
 
-        #with open('filename.jpg', 'wb') as f:
-        #    f.write(bytes(foo))
+    def __del_file(self):
+        self.fileview.del_file_from_db(self.signal_value)
+        self.model.select()
 
-        #self.lbl = Lbl(self)
-        #self.lbl.init()
-        #self.lbl.setWindowModality(Qt.ApplicationModal)
-        #pix = QPixmap()
-        #pix.loadFromData(foo)
-        #self.lbl.setPixmap(pix)
-        #self.lbl.setScaledContents(bool)
-        #print(bytes(foo))
+# ----------------------------------- Сохраняем фото -------------------------------------------------
 
-        #self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
-        #                                  WHERE IthemID=''' + str(self.signal_value))
-        #self.query.bindValue(":foto", "нет")
-        #self.query.bindValue(":foto_data", "")
-        #self.query.exec_()
+    def __save_file(self):
+        self.fileview.save_file(self.signal_value)
+
+# ----------------------------------- Закрываем просмотр фото ----------------------------------------
+
+    def __close_file(self):
+        self.fileview.close_file_view()
+        self.model.select()
 
 
 #--------------------------------------------------------------------------------------------------------------------

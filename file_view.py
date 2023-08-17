@@ -1,7 +1,7 @@
 """ -------- Окно модуля просмотра фотографий ---------------"""
 
 import sys
-from PySide6.QtWidgets import (QApplication, QWidget, QFileDialog)
+from PySide6.QtWidgets import (QApplication, QWidget, QFileDialog, QMessageBox)
 from PySide6.QtCore import (Qt, QByteArray)
 from PySide6.QtSql import (QSqlQuery)
 from PySide6.QtGui import (QPixmap)
@@ -13,9 +13,6 @@ class File_View(QWidget):
         self.ui = ui_file_view.Ui_File_View()
         self.ui.setupUi(self)
         self.query = QSqlQuery()
-        self.hide()
-
-        self.ui.pushButton_close.clicked.connect(self.close_file_view)
 
 # ----------------------------------- Загружаем фото в базу данных ---------------------------------------------
 
@@ -39,14 +36,45 @@ class File_View(QWidget):
         self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(row))
         while self.query.next():
             foo = self.query.value("foto_data")
-
-        with open('filename.jpg', 'wb') as f:
-            f.write(bytes(foo))
-
         pix = QPixmap()
         pix.loadFromData(foo)
         self.ui.label_foto.setPixmap(pix)
-        self.showMaximized()
+        self.ui.label_foto.setPixmap(pix.scaled(800, 600, Qt.KeepAspectRatio))
+        self.show()
+
+# ------------------------------------ Удаление фотографии из базы ----------------------------------------------
+
+    def del_file_from_db(self, row):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Внимание !!!")
+        dlg.setText("Удалить фото из базы данных?")
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Question)
+        button = dlg.exec()
+
+        if button == QMessageBox.Yes:
+            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
+                                                  WHERE IthemID=''' + str(row))
+            self.query.bindValue(":foto", "нет")
+            self.query.bindValue(":foto_data", "")
+            self.query.exec_()
+
+# ------------------------------------ Сохранить фото -----------------------------------------------------------
+
+    def save_file(self, row):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Внимание !!!")
+        dlg.setText("Сохранить фото в базу данных?")
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Question)
+        button = dlg.exec()
+        if button == QMessageBox.Yes:
+            self.query.exec("SELECT foto_data  FROM comments_table WHERE IthemID = " + str(row))
+            while self.query.next():
+                foo = self.query.value("foto_data")
+            with open('filename.jpg', 'wb') as f:
+                f.write(bytes(foo))
+
 
 # ------------------------------------ Закрыть окно просмотра ---------------------------------------------------
 
