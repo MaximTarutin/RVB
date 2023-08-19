@@ -383,7 +383,7 @@ class Comments_View(QMainWindow):
         self.fileview.close_file_view()
         self.model.select()
 
-# ------------------------------------ Запись в Excel ------------------------------------------------
+# ------------------------------------- Запись в Excel ------------------------------------------------
 
     def data_to_excel(self):
         f = QFileDialog.getSaveFileName(self, caption='Сохранить как...', filter="Excel (*.xlsx)")
