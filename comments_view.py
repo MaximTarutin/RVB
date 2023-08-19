@@ -389,13 +389,36 @@ class Comments_View(QMainWindow):
         workbook = xlsxwriter.Workbook('hello.xlsx')
         worksheet = workbook.add_worksheet()
         worksheet.set_landscape()
+        worksheet.set_page_view()
+        worksheet.set_paper(9)
         merge_format = workbook.add_format({
-            'bold': True,
-            'border': 6,
+            'bold': True,                       # Полужирный шрифт
             'align': 'center',
             'valign': 'vcenter',
+            'font_size': 14,
         })
-        worksheet.merge_range('A1:O2', 'ОТЧЕТ \n по замечаниям выявленым в ходе проверки _____ ', merge_format)
+        worksheet.merge_range('A1:G2', 'ОТЧЕТ \n по замечаниям выявленым в ходе проверки _____ ', merge_format)
+        merge_format1 = workbook.add_format({
+            'text_wrap': True,                  #   Текст переносить по словам
+            'border': 1,                        #   Установить границы ячейки
+            'font_size': 12,                    #   Размер шрифта
+            'align': 'center',                  #   Форматирование по центру
+            'valign': 'vcenter'
+        })
+        worksheet.set_column('A:A',3)
+        worksheet.set_column('B:B',15)
+        worksheet.set_column('C:C',35)
+        worksheet.set_column('D:D',10)                  # Устанавливаем ширину столбцов
+        worksheet.set_column('E:E',15)
+        worksheet.set_column('F:F',10)
+        worksheet.set_column('G:G',30)
+        worksheet.write(3,0,'№', merge_format1)
+        worksheet.write(3,1,'Станция', merge_format1)
+        worksheet.write(3,2,'Выявленные замечания', merge_format1)
+        worksheet.write(3,3,'Срок исполнения', merge_format1)                   # Запись данных в ячейки
+        worksheet.write(3,4,'Исполнитель', merge_format1)
+        worksheet.write(3,5,'Дата', merge_format1)
+        worksheet.write(3,6,'Отметка о выполнении', merge_format1)
         workbook.close()
 
 #--------------------------------------------------------------------------------------------------------------------
