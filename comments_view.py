@@ -386,7 +386,7 @@ class Comments_View(QMainWindow):
 # ------------------------------------- Запись в Excel ------------------------------------------------
 
     def data_to_excel(self):
-        f = QFileDialog.getSaveFileName(self, caption='Сохранить как...', filter="Excel (*.xlsx)")
+        f = QFileDialog.getSaveFileName(self, caption='Сохранить как...', filter="Excel *.xlsx (*.xlsx)")
         if f[0]!="":
             kommis = self.ui.commis_Box.currentText()
             station = self.ui.station_Box.currentText()
@@ -462,6 +462,8 @@ class Comments_View(QMainWindow):
                 worksheet.write(index, 5, old_data_db, merge_format1)
                 worksheet.write(index, 6, what_is_db, merge_format2)
                 index+=1
+
+            worksheet.write(index+2, 2, 'РЦСНС - _________/_______________________/', merge_format)
             workbook.close()
 
 #--------------------------------------------------------------------------------------------------------------------
