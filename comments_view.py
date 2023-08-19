@@ -377,7 +377,7 @@ class Comments_View(QMainWindow):
     def __save_file(self):
         self.fileview.save_file(self.signal_value)
 
-# ----------------------------------- Закрываем просмотр фото ----------------------------------------
+# ------------------------------------ Закрываем просмотр фото ----------------------------------------
 
     def __close_file(self):
         self.fileview.close_file_view()
