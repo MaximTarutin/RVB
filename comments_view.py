@@ -4,8 +4,8 @@
 
 
 import sys
-from PySide6.QtCore import (Qt, QDate)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QLabel)
+from PySide6.QtCore import (Qt, QDate, QDir)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QLabel, QFileDialog)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
 from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
@@ -386,82 +386,83 @@ class Comments_View(QMainWindow):
 # ------------------------------------ Запись в Excel ------------------------------------------------
 
     def data_to_excel(self):
-        kommis = self.ui.commis_Box.currentText()
-        station = self.ui.station_Box.currentText()
-        auditor = self.ui.auditor_Box.currentText()
-        worker = self.ui.worker_Box.currentText()
-        performance = self.ui.performance_Box.currentText()
-        data = self.ui.day_dateEdit.text()
-        index = 4
+        f = QFileDialog.getSaveFileName(self, caption='Сохранить как...', filter="Excel (*.xlsx)")
+        if f[0]!="":
+            kommis = self.ui.commis_Box.currentText()
+            station = self.ui.station_Box.currentText()
+            auditor = self.ui.auditor_Box.currentText()
+            worker = self.ui.worker_Box.currentText()
+            performance = self.ui.performance_Box.currentText()
+            data = self.ui.day_dateEdit.text()
+            index = 4
 
-        workbook = xlsxwriter.Workbook('hello.xlsx')
-        worksheet = workbook.add_worksheet()
-        worksheet.set_landscape()
-        worksheet.set_page_view()
-        worksheet.set_paper(9)
-        merge_format = workbook.add_format({
-            'bold': True,                       # Полужирный шрифт
-            'align': 'center',
-            'valign': 'vcenter',
-            'font_size': 14,
-        })
-        worksheet.merge_range('A1:G2', 'ОТЧЕТ \n по замечаниям выявленым в ходе проверки _____ ', merge_format)
-        merge_format1 = workbook.add_format({
-            'text_wrap': True,                  #   Текст переносить по словам
-            'border': 1,                        #   Установить границы ячейки
-            'font_size': 12,                    #   Размер шрифта
-            'align': 'center',                  #   Форматирование по центру
-            'valign': 'vcenter'
-        })
-        merge_format2 = workbook.add_format({
-            'text_wrap': True,  # Текст переносить по словам
-            'border': 1,  # Установить границы ячейки
-            'font_size': 12,  # Размер шрифта
-            'align': 'fill',  # Форматирование по центру
-            'valign': 'vcenter'
-        })
-        worksheet.set_column('A:A',4)
-        worksheet.set_column('B:B',15)
-        worksheet.set_column('C:C',37)
-        worksheet.set_column('D:D',10)                  # Устанавливаем ширину столбцов
-        worksheet.set_column('E:E',15)
-        worksheet.set_column('F:F',10)
-        worksheet.set_column('G:G',35)
-        worksheet.write(3,0,'№', merge_format1)
-        worksheet.write(3,1,'Станция', merge_format1)
-        worksheet.write(3,2,'Выявленные замечания', merge_format1)
-        worksheet.write(3,3,'Срок исполнения', merge_format1)                   # Запись данных в ячейки
-        worksheet.write(3,4,'Исполнитель', merge_format1)
-        worksheet.write(3,5,'Дата', merge_format1)
-        worksheet.write(3,6,'Отметка о выполнении', merge_format1)
+            workbook = xlsxwriter.Workbook(f[0])
+            worksheet = workbook.add_worksheet()
+            worksheet.set_landscape()
+            worksheet.set_page_view()
+            worksheet.set_paper(9)
+            merge_format = workbook.add_format({
+                'bold': True,                       # Полужирный шрифт
+                'align': 'center',
+                'valign': 'vcenter',
+                'font_size': 14,
+            })
+            worksheet.merge_range('A1:G2', 'ОТЧЕТ \n по замечаниям выявленым в ходе проверки _____ ', merge_format)
+            merge_format1 = workbook.add_format({
+                'text_wrap': True,                  #   Текст переносить по словам
+                'border': 1,                        #   Установить границы ячейки
+                'font_size': 12,                    #   Размер шрифта
+                'align': 'center',                  #   Форматирование по центру
+                'valign': 'vcenter'
+            })
+            merge_format2 = workbook.add_format({
+                'text_wrap': True,  # Текст переносить по словам
+                'border': 1,  # Установить границы ячейки
+                'font_size': 12,  # Размер шрифта
+                'align': 'fill',  # Форматирование по центру
+                'valign': 'vcenter'
+            })
+            worksheet.set_column('A:A',4)
+            worksheet.set_column('B:B',15)
+            worksheet.set_column('C:C',37)
+            worksheet.set_column('D:D',10)                  # Устанавливаем ширину столбцов
+            worksheet.set_column('E:E',15)
+            worksheet.set_column('F:F',10)
+            worksheet.set_column('G:G',35)
+            worksheet.write(3,0,'№', merge_format1)
+            worksheet.write(3,1,'Станция', merge_format1)
+            worksheet.write(3,2,'Выявленные замечания', merge_format1)
+            worksheet.write(3,3,'Срок исполнения', merge_format1)                   # Запись данных в ячейки
+            worksheet.write(3,4,'Исполнитель', merge_format1)
+            worksheet.write(3,5,'Дата', merge_format1)
+            worksheet.write(3,6,'Отметка о выполнении', merge_format1)
 
-        if self.ui.edit_checkBox_data.isChecked() == False:
-            self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+            if self.ui.edit_checkBox_data.isChecked() == False:
+                self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
                                station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
                                worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%"''')
-        else:
-            self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+            else:
+                self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
                                station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
                                worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%" AND
                                data LIKE "%'''+str(data)+'''%"''')
-        while self.query.next():
-            number_db = self.query.value("number")
-            station_db = self.query.value("station")
-            comment_db = self.query.value("comment")
-            term_data_db = self.query.value("term_data")
-            worker_db = self.query.value("worker")
-            old_data_db = self.query.value("old_data")
-            what_is_db = self.query.value("what_is")
-            worksheet.write(index, 0, number_db, merge_format1)
-            worksheet.write(index, 1, station_db, merge_format1)
-            worksheet.write(index, 2, comment_db, merge_format2)
-            worksheet.write(index, 3, term_data_db, merge_format1)
-            worksheet.write(index, 4, worker_db, merge_format1)
-            worksheet.write(index, 5, old_data_db, merge_format1)
-            worksheet.write(index, 6, what_is_db, merge_format2)
-            index+=1
-
-        workbook.close()
+            while self.query.next():
+                number_db = self.query.value("number")
+                station_db = self.query.value("station")
+                comment_db = self.query.value("comment")
+                term_data_db = self.query.value("term_data")
+                worker_db = self.query.value("worker")
+                old_data_db = self.query.value("old_data")
+                what_is_db = self.query.value("what_is")
+                worksheet.write(index, 0, number_db, merge_format1)
+                worksheet.write(index, 1, station_db, merge_format1)
+                worksheet.write(index, 2, comment_db, merge_format2)
+                worksheet.write(index, 3, term_data_db, merge_format1)
+                worksheet.write(index, 4, worker_db, merge_format1)
+                worksheet.write(index, 5, old_data_db, merge_format1)
+                worksheet.write(index, 6, what_is_db, merge_format2)
+                index+=1
+            workbook.close()
 
 #--------------------------------------------------------------------------------------------------------------------
 
