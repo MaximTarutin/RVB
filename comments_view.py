@@ -386,6 +386,14 @@ class Comments_View(QMainWindow):
 # ------------------------------------ Запись в Excel ------------------------------------------------
 
     def data_to_excel(self):
+        kommis = self.ui.commis_Box.currentText()
+        station = self.ui.station_Box.currentText()
+        auditor = self.ui.auditor_Box.currentText()
+        worker = self.ui.worker_Box.currentText()
+        performance = self.ui.performance_Box.currentText()
+        data = self.ui.day_dateEdit.text()
+        index = 4
+
         workbook = xlsxwriter.Workbook('hello.xlsx')
         worksheet = workbook.add_worksheet()
         worksheet.set_landscape()
@@ -405,13 +413,20 @@ class Comments_View(QMainWindow):
             'align': 'center',                  #   Форматирование по центру
             'valign': 'vcenter'
         })
-        worksheet.set_column('A:A',3)
+        merge_format2 = workbook.add_format({
+            'text_wrap': True,  # Текст переносить по словам
+            'border': 1,  # Установить границы ячейки
+            'font_size': 12,  # Размер шрифта
+            'align': 'fill',  # Форматирование по центру
+            'valign': 'vcenter'
+        })
+        worksheet.set_column('A:A',4)
         worksheet.set_column('B:B',15)
-        worksheet.set_column('C:C',35)
+        worksheet.set_column('C:C',37)
         worksheet.set_column('D:D',10)                  # Устанавливаем ширину столбцов
         worksheet.set_column('E:E',15)
         worksheet.set_column('F:F',10)
-        worksheet.set_column('G:G',30)
+        worksheet.set_column('G:G',35)
         worksheet.write(3,0,'№', merge_format1)
         worksheet.write(3,1,'Станция', merge_format1)
         worksheet.write(3,2,'Выявленные замечания', merge_format1)
@@ -419,6 +434,33 @@ class Comments_View(QMainWindow):
         worksheet.write(3,4,'Исполнитель', merge_format1)
         worksheet.write(3,5,'Дата', merge_format1)
         worksheet.write(3,6,'Отметка о выполнении', merge_format1)
+
+        if self.ui.edit_checkBox_data.isChecked() == False:
+            self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+                               station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
+                               worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%"''')
+        else:
+            self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+                               station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
+                               worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%" AND
+                               data LIKE "%'''+str(data)+'''%"''')
+        while self.query.next():
+            number_db = self.query.value("number")
+            station_db = self.query.value("station")
+            comment_db = self.query.value("comment")
+            term_data_db = self.query.value("term_data")
+            worker_db = self.query.value("worker")
+            old_data_db = self.query.value("old_data")
+            what_is_db = self.query.value("what_is")
+            worksheet.write(index, 0, number_db, merge_format1)
+            worksheet.write(index, 1, station_db, merge_format1)
+            worksheet.write(index, 2, comment_db, merge_format2)
+            worksheet.write(index, 3, term_data_db, merge_format1)
+            worksheet.write(index, 4, worker_db, merge_format1)
+            worksheet.write(index, 5, old_data_db, merge_format1)
+            worksheet.write(index, 6, what_is_db, merge_format2)
+            index+=1
+
         workbook.close()
 
 #--------------------------------------------------------------------------------------------------------------------
