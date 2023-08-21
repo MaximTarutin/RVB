@@ -115,7 +115,7 @@ class Comments_View(QMainWindow):
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
         self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
         self.ui.excel_Button.clicked.connect(self.data_to_excel)                    # Конвентируем отчет в Excel
-        self.ui.action_Excel.toggled.connect(self.data_to_excel)
+        self.ui.action_Excel.triggered.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
 
 # ------------------------- Инициализация -------------------------------
