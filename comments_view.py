@@ -119,7 +119,8 @@ class Comments_View(QMainWindow):
 # --------------------------- Инициализация -------------------------------
 
     def initial(self):
-        self.ui.tableView.scrollToBottom()                  # Спускаемся вниз таблицы
+        self.ui.tableView.setSortingEnabled(True)
+        self.ui.tableView.sortByColumn(0, Qt.DescendingOrder)    # Qt.AscendingOrder   сортировка с конца
 
         self.ui.edit_checkBox_data.setEnabled(True)
         self.programm_Mode()
