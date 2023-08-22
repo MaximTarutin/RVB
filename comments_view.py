@@ -119,6 +119,8 @@ class Comments_View(QMainWindow):
 # --------------------------- Инициализация -------------------------------
 
     def initial(self):
+        self.ui.tableView.scrollToBottom()                  # Спускаемся вниз таблицы
+
         self.ui.edit_checkBox_data.setEnabled(True)
         self.programm_Mode()
 
