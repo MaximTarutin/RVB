@@ -7,7 +7,7 @@ from PySide6.QtCore import (Qt, QRegularExpression, QDate, Signal)
 from PySide6.QtGui import (QColor, QRegularExpressionValidator)
 from PySide6.QtSql import (QSqlQuery)
 
-#------------------------ Делегат Button для вставки/просмотра фото в comments_view.py -------------------------------
+#----------------------- Делегат Button для вставки/просмотра фото в comments_view.py -------------------------------
 
 class Button_delegate(QStyledItemDelegate):
     button_signal = Signal(int)

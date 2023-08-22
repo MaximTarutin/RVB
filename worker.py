@@ -119,7 +119,7 @@ class StationWindow(QMainWindow):
         self.ui.action_user.setVisible(False)
         self.ui.action_admin.setVisible(False)
 
-    # --------------------------------- Инициализация таблицы -------------------------------------------
+    # ---------------------------------- Инициализация таблицы -------------------------------------------
 
     def __init_table(self):
         self.model.setHeaderData(0, Qt.Horizontal, "")

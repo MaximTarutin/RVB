@@ -1,4 +1,4 @@
-""" -------- Главное окно модуля работы с замечаниями ---------------"""
+""" 111111-------- Главное окно модуля работы с замечаниями ---------------"""
 
 import sys
 from PySide6.QtWidgets import (QApplication, QWidget)
@@ -31,7 +31,6 @@ class Comments_main(QWidget):
         self.query.exec('''SELECT kommis, performance FROM comments_table WHERE performance = "Не выполнено" OR
                            performance = "Подходит срок" OR performance = "Просрочено" OR 
                            performance = "Выполнить сегодня"''')
-        self.query.first()
         while self.query.next():
             commission = self.query.value("kommis")
             count+=1
@@ -53,7 +52,7 @@ class Comments_main(QWidget):
         self.ui.other_2.setText(str(other))
         self.ui.total_label.setText(str(count))
 
-#---------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

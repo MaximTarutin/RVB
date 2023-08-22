@@ -10,7 +10,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QFormLayout, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QPushButton, QSizePolicy,
     QSpacerItem, QVBoxLayout, QWidget)
-
+#---
 class Ui_commentsWindow(object):
     def setupUi(self, commentsWindow):
         if not commentsWindow.objectName():

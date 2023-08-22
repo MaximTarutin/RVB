@@ -29,7 +29,7 @@ class PasswordWindow(QMainWindow):
         self.ui.button_Ok.clicked.connect(self.__check_password)                        # Кнопка Ok
 
 
-#----------------------------- закрыть окно паролей ------------------------------------
+#------------------------------ закрыть окно паролей ------------------------------------
 
     def __return_of_password(self):
         self.ui.passw_lineEdit.clear()

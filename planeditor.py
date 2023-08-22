@@ -21,14 +21,13 @@ class PlanEditor(QMainWindow):
         self.init_plan_window()
         self.ui.tableView.resizeRowsToContents()
 
-        self.ui.pushButton_return.clicked.connect(self.closeWindow)             # Закрываем это окно
         self.ui.pushButton_add.clicked.connect(self.__add_to_database)          # Заносим данные в базу данных
         self.ui.pushButton_del.clicked.connect(self.__del_string)               # Удаляем выделенные строки
         self.ui.dateEdit.dateChanged.connect(self.__data_filter)                # применяем фильтр
         self.ui.comboBox.currentIndexChanged.connect(self.__data_filter)
 
 
-#------------------------ Инициализация планировщика ---------------------------------------
+#------------------------- Инициализация планировщика ---------------------------------------
 
     def init_plan_window(self):
         self.model.setTable("plan_table")

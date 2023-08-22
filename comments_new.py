@@ -20,7 +20,7 @@ class New_Comments_Window(QMainWindow):
 
         self.ui.Add_pushButton.clicked.connect(self.add_to_db)
 
-# ------------------ Инициализация ---------------------------------------
+# ------------------- Инициализация ---------------------------------------
 
     def initial(self):
         self.ui.date_dateEdit.setDate(QDate.currentDate())  # устанавливаем в dateEdit текущую дату

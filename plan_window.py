@@ -35,15 +35,20 @@ class Plan_Window(QMainWindow):
         self.ui.ultimate_dateEdit.dateChanged.connect(self.__data_filter)
         self.ui.comboBox_workers.currentIndexChanged.connect(self.__data_filter)
         self.ui.comboBox_station.currentIndexChanged.connect(self.__data_filter)
+        self.PlanEditor.ui.pushButton_return.clicked.connect(self.__closePlanEditor)
+
+# ---------------------------- Закрываем окно редактора ---------------------------------------------------
+    def __closePlanEditor(self):
+        self.PlanEditor.closeWindow()
+        self.model.select()
+        self.PlanEditor.close()
 
 # ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
-
     def sig_admin(self, b):
         self.FLAG_ADMIN = b
         self.programm_Mode()
 
 #-------------------------------- Режим программы (admin or user) -------------------------------------------
-
     def programm_Mode(self):
         if self.FLAG_ADMIN:
             self.ui.action_user.setDisabled(False)

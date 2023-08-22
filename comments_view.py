@@ -1,7 +1,4 @@
-""" ---------- Модуль просмотра замечаний --------------"""
-
-# ДОРАБАТЫВАЕМ ДЕЛЕГАТ КНОПКИ
-
+""" -!--------- Модуль просмотра замечаний --------------"""
 
 import sys
 from PySide6.QtCore import (Qt, QDate, QDir)
@@ -70,6 +67,7 @@ class Comments_View(QMainWindow):
 
         self.ui.tableView.setColumnHidden(0, True)
         self.ui.tableView.setColumnHidden(14, True)
+        self.ui.tableView.verticalHeader().hide()                           # Скрываем нумерацию строк
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
@@ -115,10 +113,10 @@ class Comments_View(QMainWindow):
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
         self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
         self.ui.excel_Button.clicked.connect(self.data_to_excel)                    # Конвентируем отчет в Excel
-        self.ui.action_Excel.triggered.connect(self.data_to_excel)
+        self.ui.action_Excel.toggled.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
 
-# ------------------------- Инициализация -------------------------------
+# --------------------------- Инициализация -------------------------------
 
     def initial(self):
         self.ui.edit_checkBox_data.setEnabled(True)

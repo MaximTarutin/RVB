@@ -14,7 +14,7 @@ class File_View(QWidget):
         self.ui.setupUi(self)
         self.query = QSqlQuery()
 
-# ----------------------------------- Загружаем фото в базу данных ---------------------------------------------
+# ------------------------------------ Загружаем фото в базу данных ---------------------------------------------
 
     def load_file_to_db(self, row):
         arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="Фото (*.jpg)")

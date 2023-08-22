@@ -32,7 +32,7 @@ class OtgulWindow(QWidget):
 
         self.ui.pushButton.clicked.connect(self.__closeWindow)
 
-#------------------------ Закрываем окно отгулов --------------------------------------------------------------------
+#------------------------- Закрываем окно отгулов --------------------------------------------------------------------
 
     def __closeWindow(self):
         self.query.exec('''DELETE FROM otgul_table''')

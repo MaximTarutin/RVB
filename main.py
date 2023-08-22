@@ -131,7 +131,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.planWindow.ui.action_return.triggered.connect(self.close_planwindow)       # меню вернуться назад
         self.planWindow.ui.pushButton_return.clicked.connect(self.close_planwindow)     # кнопка вернуться назад
 
-        # ************* события модуля comments_main.py ****************
+        # ************** события модуля comments_main.py ****************
 
         self.commentsMain.ui.newcommit_button.clicked.connect(self.openCommentsNew)     # открыть модуль ввода замечаний
         self.commentsMain.ui.return_button.clicked.connect(self.close_comments_main)    # закрыть окно
