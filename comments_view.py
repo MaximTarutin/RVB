@@ -67,7 +67,7 @@ class Comments_View(QMainWindow):
 
         self.ui.tableView.setColumnHidden(0, True)
         self.ui.tableView.setColumnHidden(14, True)
-        self.ui.tableView.verticalHeader().hide()                           # Скрываем нумерацию строк
+        #self.ui.tableView.verticalHeader().hide()                           # Скрываем нумерацию строк
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
