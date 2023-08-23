@@ -1,4 +1,4 @@
-""" -------- Окно модуля просмотра фотографий ---------------"""
+""" ----555---- Окно модуля просмотра фотографий ---------------"""
 
 import sys
 from PySide6.QtWidgets import (QApplication, QWidget, QFileDialog, QMessageBox)
