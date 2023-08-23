@@ -106,7 +106,7 @@ class New_Comments_Window(QMainWindow):
             foto = "нет"
             olddata = ""
             fotodata = ""
-            fotobut="0"
+            fotobut=""
             self.query.exec('''INSERT INTO comments_table (number, data, kommis, station, auditor, comment,
                                                            term_data, worker, performance, old_data, what_is, 
                                                            foto, foto_but, foto_data)

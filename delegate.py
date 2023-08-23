@@ -16,16 +16,16 @@ class Button_delegate(QStyledItemDelegate):
         self.query = QSqlQuery()
 
     def createEditor(self, parent, options, index):
-        editor = QPushButton(parent)
-        editor.clicked.connect(self.clicked_button)
+        editor = QPushButton(parent)                                # делегат - кнопка
+        editor.clicked.connect(self.clicked_button)                 # событие при нажатии кнопки
         return editor
 
-    def paint(self, painter, option, index):
-        value = index.data(Qt.EditRole)
-        opt = QStyleOptionButton()
-        opt.state = QStyle.State_Enabled
-        opt.state  = QStyle.State_On if value else QStyle.State_On
-        QApplication.style().drawControl(QStyle.CE_PushButton, opt, painter)
+    #def paint(self, painter, option, index):                        # прорисовка кнопки
+    #    value = index.data(Qt.EditRole)
+    #    opt = QStyleOptionButton()
+    #    opt.state = QStyle.State_Enabled
+    #    opt.state  = QStyle.State_On if value else QStyle.State_On
+    #    QApplication.style().drawControl(QStyle.CE_PushButton, opt, painter)
 
     def setEditorData(self, editor, index):                        # Получаем данные из модели
         self.row = index.row()+1

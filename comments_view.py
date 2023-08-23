@@ -347,7 +347,11 @@ class Comments_View(QMainWindow):
 #  ------------------------- проверяем есть ли фото в базе данных ----------------------------------------
 
     def check_button(self):
-        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.signal_value))
+        cur_row = self.ui.tableView.currentIndex().row()
+        self.n = self.ui.tableView.model().index(cur_row, 0).data()
+        print(self.n)
+
+        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))#str(self.signal_value))
         self.query.next()
         foto = self.query.value("foto")
         if foto == 'нет':
@@ -361,24 +365,24 @@ class Comments_View(QMainWindow):
 
     def __add_foto(self):
         self.fileview.setParent(self)
-        self.fileview.load_file_to_db(self.signal_value)
+        self.fileview.load_file_to_db(self.n) #self.signal_value)
 
 # ------------------------------------ Просматриваем фото --------------------------------------------
 
     def __view_foto(self):
         self.fileview.setParent(None)
-        self.fileview.open_file_from_db(self.signal_value)
+        self.fileview.open_file_from_db(self.n) #self.signal_value)
 
 # ----------------------------------- Удаляем фото ---------------------------------------------------
 
     def __del_file(self):
-        self.fileview.del_file_from_db(self.signal_value)
+        self.fileview.del_file_from_db(self.n) #self.signal_value)
         self.model.select()
 
 # ----------------------------------- Сохраняем фото -------------------------------------------------
 
     def __save_file(self):
-        self.fileview.save_file(self.signal_value)
+        self.fileview.save_file(self.n) #self.signal_value)
 
 # ------------------------------------ Закрываем просмотр фото ----------------------------------------
 
