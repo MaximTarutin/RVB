@@ -189,16 +189,26 @@ class Comments_View(QMainWindow):
         performance = self.ui.performance_Box.currentText()
         data = self.ui.day_dateEdit.date().toString("dd.MM.yyyy")
 
-        if not self.ui.edit_checkBox_data.isChecked():
-            self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND
-                                    auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND
-                                    performance like "'''+performance+'''%"''')
+        if performance != "Не выполнено":
+            if not self.ui.edit_checkBox_data.isChecked():
+                self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND
+                                        auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND
+                                        performance like "'''+performance+'''%"''')
+            else:
+                self.model.setFilter('''data like "%'''+data+'''%" AND kommis like "%''' + commis + '''%" AND 
+                                        station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
+                                        worker like "%''' + worker + '''%" AND
+                                        performance like "''' + performance + '''%"''')
         else:
-            self.model.setFilter('''data like "%'''+data+'''%" AND kommis like "%''' + commis + '''%" AND 
-                                    station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
-                                    worker like "%''' + worker + '''%" AND
-                                    performance like "''' + performance + '''%"''')
-
+            if not self.ui.edit_checkBox_data.isChecked():
+                self.model.setFilter('''kommis like "%'''+commis+'''%" AND station like "%'''+station+'''%" AND
+                                        auditor like "%'''+auditor+'''%" AND worker like "%'''+worker+'''%" AND
+                                        performance != "Выполнено"''')
+            else:
+                self.model.setFilter('''data like "%'''+data+'''%" AND kommis like "%''' + commis + '''%" AND 
+                                        station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
+                                        worker like "%''' + worker + '''%" AND
+                                        performance != "Выполнено"''')
 
 # ------------------------------  изменение статуса выполнения -------------------------------------
 
