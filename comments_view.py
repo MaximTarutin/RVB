@@ -67,7 +67,6 @@ class Comments_View(QMainWindow):
 
         self.ui.tableView.setColumnHidden(0, True)
         self.ui.tableView.setColumnHidden(14, True)
-        #self.ui.tableView.verticalHeader().hide()                           # Скрываем нумерацию строк
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
         self.ui.tableView.setItemDelegateForColumn(3, self.no_edit_delegat)
@@ -118,6 +117,7 @@ class Comments_View(QMainWindow):
         self.ui.excel_Button.clicked.connect(self.data_to_excel)                    # Конвентируем отчет в Excel
         self.ui.action_Excel.triggered.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
+        self.ui.tableView.doubleClicked.connect(self.__open_foto_user)              # просмотр фото в режиме user
 
 # --------------------------- Инициализация -------------------------------
 
@@ -282,6 +282,7 @@ class Comments_View(QMainWindow):
             self.ui.action_Station.setEnabled(True)
             self.ui.action_Password.setEnabled(True)
             self.ui.edit_checkBox.setEnabled(True)
+            self.fileview.ui.pushButton_del.setEnabled(True)
         else:
             self.ui.action_Admin.setEnabled(True)
             self.ui.action_User.setEnabled(False)
@@ -291,6 +292,7 @@ class Comments_View(QMainWindow):
             self.ui.edit_checkBox.setEnabled(False)
             self.ui.edit_checkBox.setChecked(False)
             self.ui.del_Button.setEnabled(False)
+            self.fileview.ui.pushButton_del.setEnabled(False)
 
 # ----------------------- Проверка состояния чекбоксов --------------------------------------
 
@@ -357,6 +359,21 @@ class Comments_View(QMainWindow):
         self.signal_value = b
         self.check_button()
 
+# --------------------------- Открываем фото в режиме пользователя ---------------------------------------
+
+    def __open_foto_user(self):
+        cur_row = self.ui.tableView.currentIndex().row()
+        cur_column = self.ui.tableView.currentIndex().column()
+        self.n = self.ui.tableView.model().index(cur_row, 0).data()
+        if cur_column == 13:
+            self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))
+            self.query.next()
+            foto = self.query.value("foto")
+            if foto == 'нет':
+                return
+            if foto == 'да':
+                self.__view_foto()
+
 #  ------------------------- проверяем есть ли фото в базе данных ----------------------------------------
 
     def check_button(self):
@@ -370,7 +387,6 @@ class Comments_View(QMainWindow):
             self.__add_foto()
         elif foto == 'да':
             self.__view_foto()
-        self.model.select()
         self.model.select()
 
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
