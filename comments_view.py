@@ -117,7 +117,7 @@ class Comments_View(QMainWindow):
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
         self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
         self.ui.excel_Button.clicked.connect(self.data_to_excel)                    # Конвентируем отчет в Excel
-        self.ui.action_Excel.toggled.connect(self.data_to_excel)
+        self.ui.action_Excel.triggered.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
 
 # --------------------------- Инициализация -------------------------------
@@ -370,7 +370,7 @@ class Comments_View(QMainWindow):
         elif foto == 'да':
             self.__view_foto()
         self.model.select()
-        self.initial()
+        self.model.select()
 
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
 
@@ -455,14 +455,25 @@ class Comments_View(QMainWindow):
             worksheet.write(3,5,'Дата', merge_format1)
             worksheet.write(3,6,'Отметка о выполнении', merge_format1)
 
-            if self.ui.edit_checkBox_data.isChecked() == False:
-                self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+            if performance != "Не выполнено":
+                if self.ui.edit_checkBox_data.isChecked() == False:
+                    self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
                                station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
                                worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%"''')
-            else:
-                self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+                else:
+                    self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
                                station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
                                worker LIKE "%'''+str(worker)+'''%" AND performance LIKE "%'''+str(performance)+'''%" AND
+                               data LIKE "%'''+str(data)+'''%"''')
+            else:
+                if self.ui.edit_checkBox_data.isChecked() == False:
+                    self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+                               station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
+                               worker LIKE "%'''+str(worker)+'''%" AND performance != "Выполнено"''')
+                else:
+                    self.query.exec('''SELECT * FROM comments_table WHERE kommis LIKE "%''' + str(kommis) + '''%" AND
+                               station LIKE "%'''+str(station)+'''%" AND auditor LIKE "%'''+str(auditor)+'''%" AND 
+                               worker LIKE "%'''+str(worker)+'''%" AND performance != "Выполнено" AND
                                data LIKE "%'''+str(data)+'''%"''')
             while self.query.next():
                 number_db = self.query.value("number")

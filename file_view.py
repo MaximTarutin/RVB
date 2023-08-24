@@ -58,6 +58,7 @@ class File_View(QWidget):
             self.query.bindValue(":foto_but", " ")
             self.query.bindValue(":foto_data", "")
             self.query.exec_()
+            self.close()
 
 # ------------------------------------ Сохранить фото -----------------------------------------------------------
 
