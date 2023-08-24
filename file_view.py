@@ -22,9 +22,10 @@ class File_View(QWidget):
             fob = open(arr[0], 'rb')
             blob_d = fob.read()
             blob_d = QByteArray(blob_d)
-            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data 
+            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_but=:foto_but, foto_data=:foto_data 
                                           WHERE IthemID=''' + str(row))
             self.query.bindValue(":foto", "да")
+            self.query.bindValue(":foto_but", " ")
             self.query.bindValue(":foto_data", blob_d)
             self.query.exec_()
         else:
@@ -51,9 +52,10 @@ class File_View(QWidget):
         dlg.setIcon(QMessageBox.Question)
         button = dlg.exec()
         if button == QMessageBox.Yes:
-            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_data=:foto_data
+            self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_but=:foto_but, foto_data=:foto_data
                                                   WHERE IthemID=''' + str(row))
             self.query.bindValue(":foto", "нет")
+            self.query.bindValue(":foto_but", " ")
             self.query.bindValue(":foto_data", "")
             self.query.exec_()
 

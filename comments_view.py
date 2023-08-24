@@ -95,6 +95,9 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setColumnWidth(12, 20)
         self.ui.tableView.setColumnWidth(13, 20)
 
+        self.ui.tableView.setSortingEnabled(True)
+        self.ui.tableView.sortByColumn(0, Qt.DescendingOrder)  # Qt.AscendingOrder   сортировка с конца
+
         self.initial()
 
         self.ui.edit_checkBox.stateChanged.connect(self.__check_checkBox)           # разрешено ли редактирование?
@@ -108,6 +111,7 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
+        #self.model.dataChanged.connect(self.__data_filter)
         self.button_delegat.button_signal.connect(self.sig_delegate)                # принимаем номер строки из делегата
         self.fileview.ui.pushButton_del.clicked.connect(self.__del_file)            # удаляем фото из базы данных
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
@@ -119,9 +123,6 @@ class Comments_View(QMainWindow):
 # --------------------------- Инициализация -------------------------------
 
     def initial(self):
-        self.ui.tableView.setSortingEnabled(True)
-        self.ui.tableView.sortByColumn(0, Qt.DescendingOrder)    # Qt.AscendingOrder   сортировка с конца
-
         self.ui.edit_checkBox_data.setEnabled(True)
         self.programm_Mode()
 
@@ -197,6 +198,7 @@ class Comments_View(QMainWindow):
                                     station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
                                     worker like "%''' + worker + '''%" AND
                                     performance like "''' + performance + '''%"''')
+
 
 # ------------------------------  изменение статуса выполнения -------------------------------------
 
@@ -336,7 +338,7 @@ class Comments_View(QMainWindow):
         self.__compare_date()
         self.model.submitAll()
         self.model.select()
-        self.initial()
+        self.__data_filter()
 
 # ------------------- Получаем номер строки в которой нажат делегат кнопка ----------------------------------
 
@@ -349,9 +351,8 @@ class Comments_View(QMainWindow):
     def check_button(self):
         cur_row = self.ui.tableView.currentIndex().row()
         self.n = self.ui.tableView.model().index(cur_row, 0).data()
-        print(self.n)
 
-        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))#str(self.signal_value))
+        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))
         self.query.next()
         foto = self.query.value("foto")
         if foto == 'нет':
@@ -365,24 +366,24 @@ class Comments_View(QMainWindow):
 
     def __add_foto(self):
         self.fileview.setParent(self)
-        self.fileview.load_file_to_db(self.n) #self.signal_value)
+        self.fileview.load_file_to_db(self.n)
 
 # ------------------------------------ Просматриваем фото --------------------------------------------
 
     def __view_foto(self):
         self.fileview.setParent(None)
-        self.fileview.open_file_from_db(self.n) #self.signal_value)
+        self.fileview.open_file_from_db(self.n)
 
 # ----------------------------------- Удаляем фото ---------------------------------------------------
 
     def __del_file(self):
-        self.fileview.del_file_from_db(self.n) #self.signal_value)
+        self.fileview.del_file_from_db(self.n)
         self.model.select()
 
 # ----------------------------------- Сохраняем фото -------------------------------------------------
 
     def __save_file(self):
-        self.fileview.save_file(self.n) #self.signal_value)
+        self.fileview.save_file(self.n)
 
 # ------------------------------------ Закрываем просмотр фото ----------------------------------------
 
