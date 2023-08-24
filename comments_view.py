@@ -111,7 +111,6 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        #self.model.dataChanged.connect(self.__data_filter)
         self.button_delegat.button_signal.connect(self.sig_delegate)                # принимаем номер строки из делегата
         self.fileview.ui.pushButton_del.clicked.connect(self.__del_file)            # удаляем фото из базы данных
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
@@ -209,6 +208,7 @@ class Comments_View(QMainWindow):
                                         station like "%''' + station + '''%" AND auditor like "%''' + auditor + '''%" AND 
                                         worker like "%''' + worker + '''%" AND
                                         performance != "Выполнено"''')
+        self.ui.tableView.resizeRowsToContents()                                    # Содержимое вписывается в ячейку
 
 # ------------------------------  изменение статуса выполнения -------------------------------------
 
@@ -349,6 +349,7 @@ class Comments_View(QMainWindow):
         self.model.submitAll()
         self.model.select()
         self.__data_filter()
+        self.ui.tableView.resizeRowsToContents()                    # Содержимое вписывается в ячейку
 
 # ------------------- Получаем номер строки в которой нажат делегат кнопка ----------------------------------
 
