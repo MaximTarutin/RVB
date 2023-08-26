@@ -17,7 +17,6 @@ class Time_tracking(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.FLAG_ADMIN = False
-        self.FLAF_OTGUL = False                         # False - окно отгулы не открывалось ни разу
         self.Cur_Year = datetime.now().year             # Получаем текущий год
         self.Cur_Month = datetime.now().month           # Получаем текущий месяц
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)     # деактивируем кнопку закрыть окно
@@ -39,7 +38,7 @@ class Time_tracking(QMainWindow):
         self.msg = QMessageBox()
         self.ui.pushButton_save.hide()
 
-#------------------------- Обработка сигналов ---------------------------------------------------------------
+# ------------------------- Обработка сигналов ---------------------------------------------------------------
 
         self.ui.spinBox_year.valueChanged.connect(self.init_table)              # Изменение года обновляем таблицу
         self.ui.comboBox_month.currentTextChanged.connect(self.init_table)      # Изменение месяца обновляем таблицу
@@ -55,7 +54,7 @@ class Time_tracking(QMainWindow):
     def __help_time_tracking(self):
         self.help.help_timetracking()
 
-#-------------------------- Инициализация таблицы -----------------------------------------------------------
+# -------------------------- Инициализация таблицы -----------------------------------------------------------
     def init_table(self):
         year = int(self.ui.spinBox_year.text())
         month = self.ui.comboBox_month.currentIndex()+1
@@ -66,7 +65,7 @@ class Time_tracking(QMainWindow):
         self.delegate_3 = NumericDelegate_1(self)               # только цифры валидатор
 
     # Ячейки - дни месяца вводим цифры и определенные буквы
-        for i in range(4,37):
+        for i in range(4, 37):
             self.ui.tableView.setItemDelegateForColumn(i, self.delegate_2)
 
         self.ui.tableView.setItemDelegateForColumn(2, self.delegate_3)      # Столбец норма - вводим только цифры
@@ -81,16 +80,16 @@ class Time_tracking(QMainWindow):
         self.model.setHeaderData(3, Qt.Horizontal, "Факт")
         self.model.setHeaderData(4, Qt.Horizontal, "Отгулы")
         self.model.setHeaderData(5, Qt.Horizontal, "Корр")
-        self.ui.tableView.setColumnWidth(0,0)                               # Устанавливаем ширину столбцов
-        self.ui.tableView.setColumnWidth(1,250)
-        self.ui.tableView.setColumnWidth(2,60)
-        self.ui.tableView.setColumnWidth(3,60)
-        self.ui.tableView.setColumnWidth(4,60)
-        self.ui.tableView.setColumnWidth(5,60)
+        self.ui.tableView.setColumnWidth(0, 0)                               # Устанавливаем ширину столбцов
+        self.ui.tableView.setColumnWidth(1, 250)
+        self.ui.tableView.setColumnWidth(2, 60)
+        self.ui.tableView.setColumnWidth(3, 60)
+        self.ui.tableView.setColumnWidth(4, 60)
+        self.ui.tableView.setColumnWidth(5, 60)
 
-        for i in range(6,37):
+        for i in range(6, 37):
             self.model.setHeaderData(i, Qt.Horizontal, i-5)
-            self.ui.tableView.setColumnWidth(i,45)
+            self.ui.tableView.setColumnWidth(i, 45)
 
         if day == 30:                                       # Скрываем столбцы в зависимости от количества дней в месяце
             self.ui.tableView.setColumnHidden(36, True)
@@ -127,8 +126,8 @@ class Time_tracking(QMainWindow):
 
         self.query.exec('SELECT Name FROM time_tracking')   # Проверяем есть ли хоть одна запись в таблице
         while self.query.next():
-            count+=1
-        if count==0:                                        # Если таблица пуста, то вносим первую запись
+            count += 1
+        if count == 0:                                        # Если таблица пуста, то вносим первую запись
             for i in name_table_workers:
                 self.query.exec('''INSERT INTO time_tracking (Name,Norm,Otgul,Korr,d01,d02,d03,d04,d05,d06,d07,d08,d09,
                                                               d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,
@@ -158,7 +157,7 @@ class Time_tracking(QMainWindow):
         self.model.select()
         self.calculation()
 
-#--------------------------- Клик по таблице вызывает информацию о данном рабочем дне -----------------------
+# --------------------------- Клик по таблице вызывает информацию о данном рабочем дне -----------------------
 
     def __click_to_table(self):
         if self.FLAG_ADMIN: return     # если права администратора, то функцию не выполняем
@@ -171,40 +170,39 @@ class Time_tracking(QMainWindow):
             select_day = cur_column - 5
             if select_day < 10 : select_day = "0"+str(select_day)
             select_month = self.ui.comboBox_month.currentIndex()+1
-            if select_month < 10 : select_month = "0"+str(select_month)
+            if select_month < 10: select_month = "0"+str(select_month)
             select_year = self.ui.spinBox_year.text()
             select_data = select_year+'-'+str(select_month)+'-'+str(select_day)
             name_workers = self.ui.tableView.model().index(cur_row, 1).data()   # получаем ФИО сотрудника
 
             # Находим данные по сотруднику на выбранный день из таблицы plan_table
-            plantext=""
-            count=0
+            plan_text = ""
+            count = 0
             self.query.exec('SELECT * FROM plan_table')
             while self.query.next():
                 datahide = self.query.value("DataHide")
-                data = self.query.value("Data")
                 name = self.query.value("Name")
                 station = self.query.value("Station")
                 plan = self.query.value("Plan")
-                if datahide == select_data and name == name_workers :
-                    plantext += str(count+1)+") "+station+"\n     "+plan+"\n"
+                if datahide == select_data and name == name_workers:
+                    plan_text += str(count+1)+") "+station+"\n     "+plan+"\n"
                     count += 1
                     name1 = name
             self.query.next()
             if count == 0:
-                plantext = "Данных нет"
+                plan_text = "Данных нет"
                 name1 = ""
             self.msg.setWindowTitle("План")
-            self.msg.setText(name1+"\n"+plantext)
+            self.msg.setText(name1 + "\n" + plan_text)
             self.msg.exec()
 
-#------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
+# ------------------------- Получаем сигнал со значением режима программы (админ или юзер) ---------------------------
 
     def sig_admin(self, b):
         self.FLAG_ADMIN = b
         self.programm_Mode()
 
-#------------------------- Настраиваем программы в зависимости от режима admin или user --------------------------
+# ------------------------- Настраиваем программы в зависимости от режима admin или user --------------------------
 
     def programm_Mode(self):
         if not self.FLAG_ADMIN:
@@ -302,7 +300,7 @@ class Time_tracking(QMainWindow):
         self.model.select()
 
 
-#---------------------- Расчет отработанного времени --------------------------------------------------------------
+# ---------------------- Расчет отработанного времени --------------------------------------------------------------
 
     def calculation(self):
         self.query.exec('''UPDATE time_tracking SET Fakt=d01+d02+d03+d04+d05+d06+d07+d08+d09+d10+d11+d12
@@ -324,7 +322,7 @@ class Time_tracking(QMainWindow):
 
 
 
-#------------------------- Проверяем состояние чекбокса корректировки времени -------------------------------------
+# ------------------------- Проверяем состояние чекбокса корректировки времени -------------------------------------
 
     def check_checkbox(self):
         if self.ui.checkBox_korr.isChecked() == True:
@@ -338,14 +336,14 @@ class Time_tracking(QMainWindow):
         self.OtgulWindow = otgulwindow.OtgulWindow()
         self.OtgulWindow.show()
 
-#----------------- Обработка нажатия клавиши ENTER --------------------------------
+# ----------------- Обработка нажатия клавиши ENTER --------------------------------
 
     def keyPressEvent(self, e):
         if e.key() in [Qt.Key_Enter, Qt.Key_Return]:
             self.calculation()
 
 
-#-------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------
 if __name__=='__main__':
     app = QApplication(sys.argv)
     mywindow = Time_tracking()
