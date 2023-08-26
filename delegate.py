@@ -7,33 +7,6 @@ from PySide6.QtCore import (Qt, QRegularExpression, QDate, Signal)
 from PySide6.QtGui import (QColor, QRegularExpressionValidator)
 from PySide6.QtSql import (QSqlQuery)
 
-#----------------------- Делегат Button для вставки/просмотра фото в comments_view.py -------------------------------
-
-class Button_delegate(QStyledItemDelegate):
-    button_signal = Signal(int)
-    def __init__(self, parent):
-        QStyledItemDelegate.__init__(self, parent)
-        self.query = QSqlQuery()
-
-    def createEditor(self, parent, options, index):
-        editor = QPushButton(parent)                                # делегат - кнопка
-        editor.clicked.connect(self.clicked_button)                 # событие при нажатии кнопки
-        return editor
-
-    #def paint(self, painter, option, index):                        # прорисовка кнопки
-    #    value = index.data(Qt.EditRole)
-    #    opt = QStyleOptionButton()
-    #    opt.state = QStyle.State_Enabled
-    #    opt.state  = QStyle.State_On if value else QStyle.State_On
-    #    QApplication.style().drawControl(QStyle.CE_PushButton, opt, painter)
-
-    def setEditorData(self, editor, index):                        # Получаем данные из модели
-        self.row = index.row()+1
-
-    def clicked_button(self):
-        self.button_signal[int].emit(self.row)
-
-
 # --------------------- Цвет ячейки наличия фото ---------------------------------------------
 
 class Foto_Color_Delegate(QStyledItemDelegate):

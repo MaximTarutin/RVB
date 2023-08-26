@@ -5,8 +5,7 @@ from PySide6.QtCore import (Qt, QDate, QDir)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView, QLabel, QFileDialog)
 from PySide6.QtSql import (QSqlQuery, QSqlTableModel)
 from datetime import (date, datetime)
-from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Button_delegate,
-                      Foto_Color_Delegate)
+from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Name_delegate, Foto_Color_Delegate)
 import xlsxwriter
 import ui_commentsview
 from file_view import File_View
@@ -34,7 +33,6 @@ class Comments_View(QMainWindow):
         self.no_edit_delegat = NoEditorDelegate(self)
         self.date_delegat = Date_delegate(self)
         self.worker_delegat = Worker_Name_delegate(self)
-        self.button_delegat = Button_delegate(self)
         self.foto_color_delegat = Foto_Color_Delegate(self)
         self.fileview = File_View()
 
@@ -53,7 +51,6 @@ class Comments_View(QMainWindow):
         self.model.setHeaderData(10, Qt.Horizontal, "Дата")
         self.model.setHeaderData(11, Qt.Horizontal, "Отметка о выполнении")
         self.model.setHeaderData(12, Qt.Horizontal, "Фото")
-        self.model.setHeaderData(13, Qt.Horizontal,"*")
 
         self.ui.tableView.setModel(self.model)
 
@@ -66,6 +63,7 @@ class Comments_View(QMainWindow):
         self.ui.performance_Box.addItem("Просрочено")
 
         self.ui.tableView.setColumnHidden(0, True)
+        self.ui.tableView.setColumnHidden(13, True)
         self.ui.tableView.setColumnHidden(14, True)
         self.ui.tableView.setItemDelegateForColumn(1, self.no_edit_delegat) # запрещаем редактирование некоторых
         self.ui.tableView.setItemDelegateForColumn(2, self.no_edit_delegat) # столбцов
@@ -78,7 +76,6 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setItemDelegateForColumn(9, self.color_delegat)   # Цвет ячейки в зависимости от выполнения
         self.ui.tableView.setItemDelegateForColumn(10, self.date_delegat)   # Установка даты в ячейке
         self.ui.tableView.setItemDelegateForColumn(12, self.foto_color_delegat)
-        self.ui.tableView.setItemDelegateForColumn(13, self.button_delegat)
 
         self.ui.tableView.setColumnWidth(1, 20)
         self.ui.tableView.setColumnWidth(2, 100)
@@ -92,7 +89,6 @@ class Comments_View(QMainWindow):
         self.ui.tableView.setColumnWidth(10, 100)
         self.ui.tableView.setColumnWidth(11, 400)
         self.ui.tableView.setColumnWidth(12, 20)
-        self.ui.tableView.setColumnWidth(13, 20)
 
         self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.sortByColumn(0, Qt.DescendingOrder)  # Qt.AscendingOrder   сортировка с конца
@@ -110,14 +106,13 @@ class Comments_View(QMainWindow):
         self.model.dataChanged.connect(self.__proverka)                             # если в таблице (модели) меняется
                                                                                     # какая либо дата, то изменяем
                                                                                     # формат из yyyy-MM-dd в dd.MM.yyyy
-        self.button_delegat.button_signal.connect(self.sig_delegate)                # принимаем номер строки из делегата
         self.fileview.ui.pushButton_del.clicked.connect(self.__del_file)            # удаляем фото из базы данных
         self.fileview.ui.pushButton_close.clicked.connect(self.__close_file)        # Закрываем просмотр фото
         self.fileview.ui.pushButton_save.clicked.connect(self.__save_file)          # Сохраняем фото
         self.ui.excel_Button.clicked.connect(self.data_to_excel)                    # Конвентируем отчет в Excel
         self.ui.action_Excel.triggered.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
-        self.ui.tableView.doubleClicked.connect(self.__open_foto_user)              # просмотр фото в режиме user
+        self.ui.tableView.doubleClicked.connect(self.check_button)                  # просмотр фото в режиме user
 
 # --------------------------- Инициализация -------------------------------
 
@@ -282,7 +277,6 @@ class Comments_View(QMainWindow):
             self.ui.action_Station.setEnabled(True)
             self.ui.action_Password.setEnabled(True)
             self.ui.edit_checkBox.setEnabled(True)
-            self.fileview.ui.pushButton_del.setEnabled(True)
         else:
             self.ui.action_Admin.setEnabled(True)
             self.ui.action_User.setEnabled(False)
@@ -299,11 +293,13 @@ class Comments_View(QMainWindow):
     def __check_checkBox(self):
         if self.ui.edit_checkBox.isChecked():
             self.ui.del_Button.setEnabled(True)
+            self.fileview.ui.pushButton_del.setEnabled(True)
             self.ui.tableView.setEditTriggers(QAbstractItemView.AllEditTriggers)  # Разрешаем редактировать таблицу.
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers |  # Разрешаем редактирование таблицы
                                               QAbstractItemView.DoubleClicked)    # по двойному клику мышки
         else:
             self.ui.del_Button.setEnabled(False)
+            self.fileview.ui.pushButton_del.setEnabled(False)
             self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)   # Запрет редактирования таблицы.
         if self.ui.edit_checkBox_data.isChecked():
             self.ui.day_dateEdit.setEnabled(True)
@@ -353,41 +349,21 @@ class Comments_View(QMainWindow):
         self.__data_filter()
         self.ui.tableView.resizeRowsToContents()                    # Содержимое вписывается в ячейку
 
-# ------------------- Получаем номер строки в которой нажат делегат кнопка ----------------------------------
-
-    def sig_delegate(self, b):
-        self.signal_value = b
-        self.check_button()
-
-# --------------------------- Открываем фото в режиме пользователя ---------------------------------------
-
-    def __open_foto_user(self):
-        cur_row = self.ui.tableView.currentIndex().row()
-        cur_column = self.ui.tableView.currentIndex().column()
-        self.n = self.ui.tableView.model().index(cur_row, 0).data()
-        if cur_column == 13:
-            self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))
-            self.query.next()
-            foto = self.query.value("foto")
-            if foto == 'нет':
-                return
-            if foto == 'да':
-                self.__view_foto()
-
 #  ------------------------- проверяем есть ли фото в базе данных ----------------------------------------
 
     def check_button(self):
         cur_row = self.ui.tableView.currentIndex().row()
+        cur_column = self.ui.tableView.currentIndex().column()
         self.n = self.ui.tableView.model().index(cur_row, 0).data()
-
-        self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))
-        self.query.next()
-        foto = self.query.value("foto")
-        if foto == 'нет':
-            self.__add_foto()
-        elif foto == 'да':
-            self.__view_foto()
-        self.model.select()
+        if cur_column == 12:
+            self.query.exec("SELECT foto FROM comments_table WHERE IthemID = " + str(self.n))
+            self.query.next()
+            foto = self.query.value("foto")
+            if foto == 'нет':
+                self.__add_foto()
+            elif foto == 'да':
+                self.__view_foto()
+            self.model.select()
 
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
 
