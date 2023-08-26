@@ -18,6 +18,7 @@ import plan_window
 import comments_main
 import comments_new
 import comments_view
+import help_window
 
 class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     admin_signal = Signal(bool)
@@ -32,6 +33,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsMain = comments_main.Comments_main()               # модуль работы с замечаниями
         self.commentsNew = comments_new.New_Comments_Window()           # Модуль ввода замечаний
         self.commentsView = comments_view.Comments_View()               # Модуль просмотра и редактирования замечаний
+        self.helpWindow = help_window.HelpWindow()                      # Модуль справки
 
         self.query = QSqlQuery()
         self.model = QSqlQueryModel(self)
@@ -59,7 +61,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.newPasswordWindow.ui.label.setText('Создайте пароль администратора')
 
         self.resize(800, 600)
-        self.setWindowTitle('Моя бригада')
+        self.setWindowTitle('РВБ')
         self.show()
 
         self.programm_Mode()                        # Настройка активных пунктов меню в зависимости от режима программы
@@ -83,6 +85,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.button_1.clicked.connect(self.open_time_tracking)                          # кнопка учет времени сотрудник
         self.button_3.clicked.connect(self.open_planwindow)                             # кнопка планировщик работ
         self.button_2.clicked.connect(self.open_comments_main)                          # кнопка модуль замечаний
+        self.action_about.triggered.connect(self.help_about)                            # меню о программе
 
         # ************* События модуля time_tracking.py **************
 
@@ -100,13 +103,17 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             connect(self.close_time_tracking)                                           # меню вернуться
         self.timeTrackingWindow.ui.pushButton_return.clicked. \
             connect(self.close_time_tracking)                                           # Кнопка вернуться
+        self.timeTrackingWindow.ui.action_about.triggered. \
+            connect(self.help_about)                                                    # меню о программе
 
         # ************* События модуля worker.py **************
 
         self.workerWindow.ui.button_return.clicked.connect(self.close_workerWindow)     # Закрыть редактор сотрудников
         self.workerWindow.ui.action_return.triggered.connect(self.close_workerWindow)   # Закрыть редактор сотрудников
-        self.stationWindow.ui.button_return.clicked.connect(self.close_stationWindow)    # Закрыть редактор станций
-        self.stationWindow.ui.action_return.triggered.connect(self.close_stationWindow)  # Закрыть редактор станций
+        self.stationWindow.ui.button_return.clicked.connect(self.close_stationWindow)   # Закрыть редактор станций
+        self.stationWindow.ui.action_return.triggered.connect(self.close_stationWindow) # Закрыть редактор станций
+        self.workerWindow.ui.action_about.triggered.connect(self.help_about)            # меню о программе
+        self.stationWindow.ui.action_about.triggered.connect(self.help_about)
 
         # ************ События модуля password.py **************
 
@@ -130,6 +137,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             (self.edit_passwordWindow)                                                  # изменить пароль администратора
         self.planWindow.ui.action_return.triggered.connect(self.close_planwindow)       # меню вернуться назад
         self.planWindow.ui.pushButton_return.clicked.connect(self.close_planwindow)     # кнопка вернуться назад
+        self.planWindow.ui.action_about.triggered.connect(self.help_about)              # меню о программе
 
         # ************** события модуля comments_main.py ****************
 
@@ -146,6 +154,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsNew.ui.action_workers.triggered.connect(self.open_workerWindow)    # меню редактор сотрудников
         self.commentsNew.ui.action_stations.triggered.connect(self.open_stationWindow)  # меню редактор станций
         self.commentsNew.ui.action_password.triggered.connect(self.edit_passwordWindow) # изменить пароль администратора
+        self.commentsNew.ui.action_about.triggered.connect(self.help_about)             # меню о программе
 
         #*************** события модуля comments_view.py **********************
 
@@ -157,6 +166,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsView.ui.action_Station.triggered.connect(self.open_stationWindow)  # меню редактор станций
         self.commentsView.ui.action_Password.triggered.connect \
             (self.edit_passwordWindow)                                                  # изменить пароль администратора
+        self.commentsView.ui.action_About.triggered.connect(self.help_about)            # меню о программе
 
 #-------------------------- Сигналы --------------------------------------------
 
@@ -167,6 +177,9 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.admin_signal[bool].connect(self.commentsView.sig_admin)
 
         self.user_Mode()  # Включаем режим пользователя
+
+    def help_about(self):
+        self.helpWindow.about()
 
 #------------- Выход из программы --------------------------------------------------------------
 

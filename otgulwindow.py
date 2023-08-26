@@ -6,6 +6,7 @@ import sys
 from PySide6.QtCore import (Qt)
 from PySide6.QtWidgets import (QApplication, QWidget, QAbstractItemView)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
+
 import ui_otgulwindow
 
 class OtgulWindow(QWidget):

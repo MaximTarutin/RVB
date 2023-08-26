@@ -19,7 +19,10 @@ class File_View(QWidget):
     def load_file_to_db(self, row):
         arr = QFileDialog().getOpenFileName(self, caption="Загрузить фото", filter="Фото (*.jpg)")
         if len(arr) != 0 or arr.isspace():
-            fob = open(arr[0], 'rb')
+            try:
+                fob = open(arr[0], 'rb')
+            except:
+                return
             blob_d = fob.read()
             blob_d = QByteArray(blob_d)
             self.query.prepare('''UPDATE comments_table SET foto=:foto, foto_but=:foto_but, foto_data=:foto_data 

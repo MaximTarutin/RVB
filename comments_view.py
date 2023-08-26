@@ -368,8 +368,9 @@ class Comments_View(QMainWindow):
 # ------------------------------------- Добавляем фото в базу -----------------------------------------
 
     def __add_foto(self):
-        self.fileview.setParent(self)
-        self.fileview.load_file_to_db(self.n)
+        if self.FLAG_ADMIN and self.ui.edit_checkBox.isChecked():
+            self.fileview.setParent(self)
+            self.fileview.load_file_to_db(self.n)
 
 # ------------------------------------ Просматриваем фото --------------------------------------------
 

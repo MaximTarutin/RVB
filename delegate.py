@@ -27,7 +27,6 @@ class Foto_Color_Delegate(QStyledItemDelegate):
             color = "lightgreen"
         option.backgroundBrush = QColor(color)
 
-
 #------------- Делегат со списком работников ---------------------------------------------
 
 class Worker_Name_delegate(QStyledItemDelegate):
@@ -128,7 +127,6 @@ class NumericDelegate(QStyledItemDelegate):
                 color = "red"           # Прогул
             case 'Не выполнено':
                 color = "red"
-
         option.backgroundBrush = QColor(color)
 
     def createEditor(self, parent, option, index):
