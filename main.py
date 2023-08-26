@@ -86,6 +86,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.button_3.clicked.connect(self.open_planwindow)                             # кнопка планировщик работ
         self.button_2.clicked.connect(self.open_comments_main)                          # кнопка модуль замечаний
         self.action_about.triggered.connect(self.help_about)                            # меню о программе
+        self.action_module.triggered.connect(self.help_main_window)                     # меню модули
 
         # ************* События модуля time_tracking.py **************
 
@@ -178,8 +179,15 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
         self.user_Mode()  # Включаем режим пользователя
 
+# ----------------------------- О программе --------------------------------------------------
+
     def help_about(self):
         self.helpWindow.about()
+
+# ---------------------------- Справка модули -----------------------------------------------
+
+    def help_main_window(self):
+        self.helpWindow.help_main_window()
 
 #------------- Выход из программы --------------------------------------------------------------
 

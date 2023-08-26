@@ -11,6 +11,7 @@ from delegate import (NoEditorDelegate, NumericDelegate, NumericDelegate_1)
 import ui_time_tracking
 import passwrd
 import otgulwindow
+import help_window
 
 class Time_tracking(QMainWindow):
     def __init__(self, parent=None):
@@ -25,6 +26,7 @@ class Time_tracking(QMainWindow):
         self.ui.setupUi(self)
         self.ui.action_return.setText("&Назад")
         self.passwordWindow = passwrd.PasswordWindow()
+        self.help = help_window.HelpWindow()
         self.query = QSqlQuery()
 
         self.model = QSqlTableModel(self)               # Создаем модель и связываем таблицу
@@ -44,8 +46,14 @@ class Time_tracking(QMainWindow):
         self.model.dataChanged.connect(self.calculation)                        # Расчет времени и сохранение
         self.ui.checkBox_korr.clicked.connect(self.check_checkbox)              # проверка состояния чекбокса
         self.ui.pushButton_Otgul.clicked.connect(self.__show_win_otgul)         # показать окно отгулов
-        self.ui.action_otgul.triggered.connect(self.__show_win_otgul)
-        self.ui.tableView.doubleClicked.connect(self.__click_to_table)
+        self.ui.action_otgul.triggered.connect(self.__show_win_otgul)           # Показать окно отгулов
+        self.ui.tableView.doubleClicked.connect(self.__click_to_table)          # обработка двойного клика по таблице
+        self.ui.action_moduls.triggered.connect(self.__help_time_tracking)      # справка по модулю
+
+# ---------------------------- Справка по модулю -----------------------------------------------------------
+
+    def __help_time_tracking(self):
+        self.help.help_timetracking()
 
 #-------------------------- Инициализация таблицы -----------------------------------------------------------
     def init_table(self):
