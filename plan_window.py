@@ -7,6 +7,7 @@ from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import passwrd
 from planeditor import PlanEditor
+import help_window
 
 class Plan_Window(QMainWindow):
     def __init__(self, parent = None):
@@ -18,6 +19,7 @@ class Plan_Window(QMainWindow):
 
         self.PasswordWindow = passwrd.PasswordWindow()
         self.PlanEditor= PlanEditor()
+        self.help_plan_window = help_window.HelpWindow()
 
         self.query = QSqlQuery()
 
@@ -36,6 +38,12 @@ class Plan_Window(QMainWindow):
         self.ui.comboBox_workers.currentIndexChanged.connect(self.__data_filter)
         self.ui.comboBox_station.currentIndexChanged.connect(self.__data_filter)
         self.PlanEditor.ui.pushButton_return.clicked.connect(self.__closePlanEditor)
+        self.ui.action_moduls.triggered.connect(self.__help_plan)
+
+# ----------------------------- Справка о модуле --------------------------------------------------------
+
+    def __help_plan(self):
+        self.help_plan_window.help_plan()
 
 # ---------------------------- Закрываем окно редактора ---------------------------------------------------
     def __closePlanEditor(self):
