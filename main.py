@@ -189,7 +189,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def help_main_window(self):
         self.helpWindow.help_main_window()
 
-#------------- Выход из программы --------------------------------------------------------------
+#--------------------------- Выход из программы ------------------------------------------
 
     def exitofprogramm(self):
         self.close()

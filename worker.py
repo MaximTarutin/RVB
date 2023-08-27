@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QAbstractItemView)
 from PySide6.QtSql import (QSqlTableModel, QSqlQuery)
 import ui_workerwindow
 from delegate import (Worker_delegate)
+import help_window
 
 """-------------------------------------------------------------------------------------------------------------#
 #--------------------------------- Окно редактирования сотрудников ---------------------------------------------#
@@ -21,9 +22,8 @@ class WorkerWindow(QMainWindow):
         super().__init__(parent)
         self.deleg = None
         self.ui = ui_workerwindow.Ui_workerWindow()
+        self.helpWorker = help_window.HelpWindow()
         self.ui.setupUi(self)
-
-        self.setWindowFlag(Qt.FramelessWindowHint)              # скрываем рамку окна
 
         self.query = QSqlQuery()
         self.model = QSqlTableModel(self)  # Создаем модель и связываем таблицу
@@ -42,6 +42,12 @@ class WorkerWindow(QMainWindow):
 
         self.ui.button_add.clicked.connect(self.__add_data_db)  # Добавить новую строку в таблицу
         self.ui.button_del.clicked.connect(self.__del_string)  # Удаляем выбранную строку с текущего месяца
+        self.ui.action_module.triggered.connect(self.__help_worker) # справка по модулю
+
+# ------------------------------ справка по модулю ------------------------------------------------------
+    def __help_worker(self):
+        self.helpWorker.help_worker()
+
 
     # ---------------------------- Добавление новой строки в таблицу --------------------------------------
 
@@ -98,6 +104,7 @@ class StationWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = ui_workerwindow.Ui_workerWindow()
+        self.helpStation = help_window.HelpWindow()
         self.ui.setupUi(self)
         self.setWindowFlag(Qt.FramelessWindowHint)                              # скрываем рамку окна
         self.ui.label.setText('Редактор станций и перегонов')
@@ -119,6 +126,10 @@ class StationWindow(QMainWindow):
         self.ui.action_user.setVisible(False)
         self.ui.action_admin.setVisible(False)
 
+# ------------------------------ справка по модулю ------------------------------------------------------
+    def __help_station(self):
+        self.helpStation.help_worker()
+
     # ---------------------------------- Инициализация таблицы -------------------------------------------
 
     def __init_table(self):
@@ -138,6 +149,7 @@ class StationWindow(QMainWindow):
 
         self.ui.button_add.clicked.connect(self.__add_data_db)  # Добавить новую строку в таблицу
         self.ui.button_del.clicked.connect(self.__del_string)  # Удаляем выбранную строку из таблицы и базы
+        self.ui.action_module.triggered.connect(self.__help_station)     # справка по модулю
 
     # ---------------------------- Добавление новой строки в таблицу --------------------------------------
 
