@@ -5,6 +5,7 @@ from PySide6.QtCore import (Qt, QDate)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 from PySide6.QtSql import (QSqlQuery)
 import ui_commentsnew
+import help_window
 
 class New_Comments_Window(QMainWindow):
     def __init__(self, parent = None):
@@ -14,11 +15,18 @@ class New_Comments_Window(QMainWindow):
         self.ui = ui_commentsnew.Ui_CommentsNew()
         self.ui.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
+        self.help_comments_new = help_window.HelpWindow()
 
         self.query = QSqlQuery()
         self.initial()
 
-        self.ui.Add_pushButton.clicked.connect(self.add_to_db)
+        self.ui.Add_pushButton.clicked.connect(self.add_to_db)              # Добавляем данные в базу
+        self.ui.action_moduls.triggered.connect(self.help_module)           # Справка по модулю
+
+# -------------------- Справко по модулю ---------------------------------
+
+    def help_module(self):
+        self.help_comments_new.help_new_comments()
 
 # ------------------- Инициализация ---------------------------------------
 

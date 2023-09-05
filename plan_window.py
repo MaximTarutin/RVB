@@ -37,8 +37,8 @@ class Plan_Window(QMainWindow):
         self.ui.ultimate_dateEdit.dateChanged.connect(self.__data_filter)
         self.ui.comboBox_workers.currentIndexChanged.connect(self.__data_filter)
         self.ui.comboBox_station.currentIndexChanged.connect(self.__data_filter)
-        self.PlanEditor.ui.pushButton_return.clicked.connect(self.__closePlanEditor)
-        self.ui.action_moduls.triggered.connect(self.__help_plan)
+        self.PlanEditor.ui.pushButton_return.clicked.connect(self.__closePlanEditor)  # закрыть окно планировщика
+        self.ui.action_moduls.triggered.connect(self.__help_plan)                     # вызов справки
 
 # ----------------------------- Справка о модуле --------------------------------------------------------
 
