@@ -51,15 +51,15 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.passwordWindow.ui.passw_label_3.hide()
         self.passwordWindow.ui.new_passw_lineEdit_1.hide()
         self.passwordWindow.ui.new_passw_lineEdit.hide()
-        self.passwordWindow.ui.passw_label.move(20,140)
-        self.passwordWindow.ui.passw_lineEdit.move(290,140)
+        self.passwordWindow.ui.passw_label.move(20, 140)
+        self.passwordWindow.ui.passw_lineEdit.move(290, 140)
 
         self.newPasswordWindow.ui.passw_lineEdit.hide()
         self.newPasswordWindow.ui.passw_label.hide()
-        self.newPasswordWindow.ui.passw_label_2.move(20,100)
-        self.newPasswordWindow.ui.new_passw_lineEdit.move(290,100)
-        self.newPasswordWindow.ui.passw_label_3.move(20,150)
-        self.newPasswordWindow.ui.new_passw_lineEdit_1.move(290,150)
+        self.newPasswordWindow.ui.passw_label_2.move(20, 100)
+        self.newPasswordWindow.ui.new_passw_lineEdit.move(290, 100)
+        self.newPasswordWindow.ui.passw_label_3.move(20, 150)
+        self.newPasswordWindow.ui.new_passw_lineEdit_1.move(290, 150)
         self.newPasswordWindow.ui.label.setText('Создайте пароль администратора')
 
         self.resize(800, 600)
@@ -159,7 +159,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsNew.ui.action_password.triggered.connect(self.edit_passwordWindow) # изменить пароль администратора
         self.commentsNew.ui.action_about.triggered.connect(self.help_about)             # меню о программе
 
-        #*************** события модуля comments_view.py **********************
+        # *************** события модуля comments_view.py **********************
 
         self.commentsView.ui.action_Return.triggered.connect(self.closeCommentView)     # закрыть модуль просмотра
         self.commentsView.ui.return_pushButton.clicked.connect(self.closeCommentView)   # и редактирования замечаний
@@ -171,7 +171,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             (self.edit_passwordWindow)                                                  # изменить пароль администратора
         self.commentsView.ui.action_About.triggered.connect(self.help_about)            # меню о программе
 
-#-------------------------- Сигналы --------------------------------------------
+# -------------------------- Сигналы --------------------------------------------
 
         self.admin_signal[bool].connect(self.sig_admin)                                 # принимаем сигнал во всех окнах
         self.admin_signal[bool].connect(self.timeTrackingWindow.sig_admin)
@@ -191,7 +191,7 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def help_main_window(self):
         self.helpWindow.help_main_window()
 
-#--------------------------- Выход из программы ------------------------------------------
+# --------------------------- Выход из программы ------------------------------------------
 
     def exitofprogramm(self):
         self.close()
@@ -201,27 +201,27 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def user_Mode(self):
         self.admin_signal[bool].emit(False)
 
-#-------------- Показать модуль просмотра и редактирования замечаний (comments_view.py) -----------------------
+# -------------- Показать модуль просмотра и редактирования замечаний (comments_view.py) -----------------------
 
     def openCommentView(self):
         self.commentsView.showMaximized()
         self.commentsMain.hide()
         self.commentsView.initial()
 
-#-------------- Закрыть модуль просмотра и редактирования замечаний (comments_view.py) ------------------------
+# -------------- Закрыть модуль просмотра и редактирования замечаний (comments_view.py) ------------------------
 
     def closeCommentView(self):
         self.commentsMain.show()
         self.commentsView.close()
 
-#-------------- Показать модуль ввода новых замечаний (comments_new.py) ----------------------------------------
+# -------------- Показать модуль ввода новых замечаний (comments_new.py) ----------------------------------------
 
     def openCommentsNew(self):
         self.commentsNew.show()
         self.commentsMain.hide()
         self.commentsNew.initial()
 
-#--------------- Закрыть модуль ввода новых замечаний (comments_new.py) ----------------------------------------
+# --------------- Закрыть модуль ввода новых замечаний (comments_new.py) ----------------------------------------
 
     def closeCommentsNew(self):
         self.commentsMain.show()
@@ -236,20 +236,20 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsMain.show()
         self.hide()
 
-#---------------- Закрыть главное окно модуля замечаний (comments_main.py) --------------------------------------
+# ---------------- Закрыть главное окно модуля замечаний (comments_main.py) --------------------------------------
 
     def close_comments_main(self):
         self.show()
         self.commentsMain.close()
 
-#------------- Показать окно редактора сотрудников (worker.py) --------------------------------------------
+# ------------- Показать окно редактора сотрудников (worker.py) --------------------------------------------
 
     def open_workerWindow(self):
         self.workerWindow.init_table()
         self.workerWindow.show()
         self.hide()
 
-#----------------- Закрыть окно редактора сотрудников (worker.py) ----------------------------------------
+# ----------------- Закрыть окно редактора сотрудников (worker.py) ----------------------------------------
 
     def close_workerWindow(self):
         self.del_empty_string()
@@ -315,14 +315,14 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.hide()
         self.planWindow.init()
 
-#-------------------- Закрыть окно планировщика работ (plan_window.py) ---------------------------------------------
+# -------------------- Закрыть окно планировщика работ (plan_window.py) ---------------------------------------------
 
     def close_planwindow(self):
         self.show()
         self.planWindow.hide()
 
 
-#----------- Удаление пустых строк в таблице сотрудников и станций при закрытии окон редакторов --------------
+# ----------- Удаление пустых строк в таблице сотрудников и станций при закрытии окон редакторов --------------
 
     def del_empty_string(self):
 
@@ -335,9 +335,9 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             self.name = self.query.value("Name")
             self.post = self.query.value("Post")
             self.number = self.query.value("Number")
-            if len(self.name)==0 or self.name.isspace() or \
-                    len(self.post)==0 or self.post.isspace() \
-                    or len(self.number)==0 or self.number.isspace():
+            if len(self.name) == 0 or self.name.isspace() or \
+                    len(self.post) == 0 or self.post.isspace() \
+                    or len(self.number) == 0 or self.number.isspace():
                 self.query.exec("DELETE FROM workers WHERE Name='"+self.name+"' or Post='"+self.post+"'or "
                                                            "Number='"+self.number+"'")
 
