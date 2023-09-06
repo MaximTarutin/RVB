@@ -9,6 +9,7 @@ from delegate import (ColorDelegate, NoEditorDelegate, Date_delegate, Worker_Nam
 import xlsxwriter
 import ui_commentsview
 from file_view import File_View
+import help_window
 
 class Lbl(QLabel):
     def __init__(self, parrent=None):
@@ -35,6 +36,7 @@ class Comments_View(QMainWindow):
         self.worker_delegat = Worker_Name_delegate(self)
         self.foto_color_delegat = Foto_Color_Delegate(self)
         self.fileview = File_View()
+        self.help_module = help_window.HelpWindow()
 
 
         self.model = QSqlTableModel(self)
@@ -113,6 +115,12 @@ class Comments_View(QMainWindow):
         self.ui.action_Excel.triggered.connect(self.data_to_excel)
         self.ui.del_Button.clicked.connect(self.__del_string)                       # Удаляем выбранные строки
         self.ui.tableView.doubleClicked.connect(self.check_button)                  # просмотр фото в режиме user
+        self.ui.action_Moduls.triggered.connect(self.__help_module)                 # Справка по модулю
+
+# ---------------------------- Справка по модулю --------------------------------------------------------------------
+
+    def __help_module(self):
+        self.help_module.help_view_comments()
 
 # --------------------------- Инициализация -------------------------------
 
