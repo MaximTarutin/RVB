@@ -1,4 +1,4 @@
-""" Редактор планировщика. """
+"""  Редактор планировщика. """
 
 import sys
 from PySide6.QtWidgets import (QMainWindow, QApplication, QMessageBox, QAbstractItemView)

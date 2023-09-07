@@ -1,4 +1,4 @@
-""" ------ Делегаты для QTableView ------
+"""  ------ Делегаты для QTableView ------
 """
 
 from PySide6.QtWidgets import (QStyledItemDelegate, QComboBox, QLineEdit, QDateEdit, QPushButton,
