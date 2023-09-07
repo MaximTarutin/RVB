@@ -35,8 +35,11 @@ class Comments_View(QMainWindow):
         self.date_delegat = Date_delegate(self)
         self.worker_delegat = Worker_Name_delegate(self)
         self.foto_color_delegat = Foto_Color_Delegate(self)
+
         self.fileview = File_View()
         self.help_module = help_window.HelpWindow()
+        self.help_module.setScreen(QApplication.screens()[0])
+        self.fileview.setScreen(QApplication.screens()[0])
 
 
         self.model = QSqlTableModel(self)

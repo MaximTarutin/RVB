@@ -36,16 +36,27 @@ class MyWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.commentsNew = comments_new.New_Comments_Window()           # Модуль ввода замечаний
         self.commentsView = comments_view.Comments_View()               # Модуль просмотра и редактирования замечаний
         self.helpWindow = help_window.HelpWindow()                      # Модуль справки
+        self.workerWindow = worker.WorkerWindow()                       # модуль редактора сотрудников
+        self.stationWindow = worker.StationWindow()                     # модуль редактора станций и перегонов
+        self.timeTrackingWindow = time_tracking.Time_tracking()         # модуль учета рабочего времени сотрудников
+        self.planWindow = plan_window.Plan_Window()                     # модуль планировщика работ
+
+        self.passwordWindow.setScreen(QApplication.screens()[0])
+        self.editPasswordWindow.setScreen(QApplication.screens()[0])
+        self.newPasswordWindow.setScreen(QApplication.screens()[0])
+        self.commentsMain.setScreen(QApplication.screens()[0])
+        self.commentsNew.setScreen(QApplication.screens()[0])
+        self.commentsView.setScreen(QApplication.screens()[0])          # Выводим все окна на первый монитор, если их
+        self.helpWindow.setScreen(QApplication.screens()[0])            # несколько
+        self.workerWindow.setScreen(QApplication.screens()[0])
+        self.stationWindow.setScreen(QApplication.screens()[0])
+        self.timeTrackingWindow.setScreen(QApplication.screens()[0])
+        self.planWindow.setScreen(QApplication.screens()[0])
 
         self.query = QSqlQuery()
         self.model = QSqlQueryModel(self)
 
         self.db_init()                                                  # Инициализируем базу данных
-
-        self.workerWindow = worker.WorkerWindow()                       # окно редактора сотрудников
-        self.stationWindow = worker.StationWindow()                     # окно редактора станций и перегонов
-        self.timeTrackingWindow = time_tracking.Time_tracking()         # окно учета рабочего времени сотрудников
-        self.planWindow = plan_window.Plan_Window()                     # окно планировщика работ
 
         self.passwordWindow.ui.passw_label_2.hide()
         self.passwordWindow.ui.passw_label_3.hide()
@@ -443,6 +454,7 @@ if __name__ == '__main__':
         db.open()
     app = QApplication(sys.argv)
     mywindow = MyWindow()
+    mywindow.setScreen(app.screens()[0])                # Приложение выводится на первом мониторе, если их несколько
     mywindow.show()
     sys.exit(app.exec())
 

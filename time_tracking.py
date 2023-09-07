@@ -24,8 +24,12 @@ class Time_tracking(QMainWindow):
         self.ui = ui_time_tracking.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.action_return.setText("&Назад")
+
         self.passwordWindow = passwrd.PasswordWindow()
         self.help = help_window.HelpWindow()
+        self.passwordWindow.setScreen(QApplication.screens()[0])
+        self.help.setScreen(QApplication.screens()[0])
+
         self.query = QSqlQuery()
 
         self.model = QSqlTableModel(self)               # Создаем модель и связываем таблицу

@@ -23,6 +23,8 @@ class WorkerWindow(QMainWindow):
         self.deleg = None
         self.ui = ui_workerwindow.Ui_workerWindow()
         self.helpWorker = help_window.HelpWindow()
+        self.helpWorker.setScreen(QApplication.screens()[0])
+
         self.ui.setupUi(self)
 
         self.query = QSqlQuery()
@@ -105,7 +107,10 @@ class StationWindow(QMainWindow):
         super().__init__(parent)
         self.ui = ui_workerwindow.Ui_workerWindow()
         self.helpStation = help_window.HelpWindow()
+        self.helpStation.setScreen(QApplication.screens()[0])
+
         self.ui.setupUi(self)
+
         self.setWindowFlag(Qt.FramelessWindowHint)                              # скрываем рамку окна
         self.ui.label.setText('Редактор станций и перегонов')
         self.setWindowTitle('Станции и перегоны')

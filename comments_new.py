@@ -16,6 +16,7 @@ class New_Comments_Window(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)  # деактивируем кнопку закрыть окно
         self.help_comments_new = help_window.HelpWindow()
+        self.help_comments_new.setScreen(QApplication.screens()[0])
 
         self.query = QSqlQuery()
         self.initial()
